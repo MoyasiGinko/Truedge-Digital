@@ -37,6 +37,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --cursor-blend-mode: normal;
+}
+
+body {
+  /* cursor: none;  */
+
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+
+  /* Disable text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,12 +60,6 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .dark {
@@ -122,4 +132,60 @@ h6 {
       transparent 1px
     ),
     linear-gradient(to bottom, rgba(213, 209, 209, 0.2) 1px, transparent 1px);
+}
+
+/* Add this to your globals.css file */
+
+/* Make sure interactive elements still show their functionality */
+/* a,
+button,
+input,
+textarea,
+select,
+[role="button"],
+[tabindex="0"] {
+  cursor: none;
+} */
+
+/* Hide default cursor */
+
+/* a,
+button,
+[role="button"],
+[tabindex="0"] {
+  cursor: none !important;
+} */
+
+/* Apply blend modes to elements with data attributes */
+[data-cursor-blend="difference"] {
+  mix-blend-mode: difference;
+}
+
+/* Add more blend modes as needed */
+[data-cursor-blend="overlay"] {
+  mix-blend-mode: overlay;
+}
+
+/* Media query to disable custom cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  body,
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    cursor: auto !important;
+  }
+
+  [data-cursor] {
+    display: none !important;
+  }
+}
+
+/* Add this to create a selectable class for content that should be selectable */
+.selectable-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
