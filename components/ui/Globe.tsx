@@ -124,25 +124,34 @@ export function Globe({ globeConfig, data }: WorldProps) {
         !isNaN(arc.startLng) &&
         !isNaN(arc.endLat) &&
         !isNaN(arc.endLng) &&
-        !isNaN(arc.arcAlt)
+        !isNaN(arc.arcAlt) &&
+        typeof arc.color === "string" // Add this check
       );
     });
 
     let points = [];
     for (let i = 0; i < validArcs.length; i++) {
       const arc = validArcs[i];
-      const rgb = hexToRgb(arc.color) as { r: number; g: number; b: number };
+      // Ensure color is a valid string before processing
+      const validColor = typeof arc.color === "string" ? arc.color : "#3b82f6";
+      const rgb = hexToRgb(validColor);
+
+      // Always ensure rgb is valid
+      const safeRgb = rgb || { r: 59, g: 130, b: 246 };
+
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
-        color: (t: number) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${1 - t})`,
+        color: (t: number) =>
+          `rgba(${safeRgb.r}, ${safeRgb.g}, ${safeRgb.b}, ${1 - t})`,
         lat: arc.startLat,
         lng: arc.startLng,
       });
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
-        color: (t: number) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${1 - t})`,
+        color: (t: number) =>
+          `rgba(${safeRgb.r}, ${safeRgb.g}, ${safeRgb.b}, ${1 - t})`,
         lat: arc.endLat,
         lng: arc.endLng,
       });
@@ -210,7 +219,22 @@ export function Globe({ globeConfig, data }: WorldProps) {
         .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
         .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
         .arcEndLng((d) => (d as { endLng: number }).endLng * 1)
-        .arcColor((e: any) => (e as { color: string }).color)
+        .arcColor((e: any) => {
+          // First try to get the color from the data
+          let color = (e as { color: any }).color;
+
+          // If it's not a string, use a default color
+          if (typeof color !== "string") {
+            color = "#3b82f6";
+          }
+
+          // Extra safety - ensure it's a properly formatted color string
+          if (!color.startsWith("#") && !color.startsWith("rgb")) {
+            color = "#3b82f6";
+          }
+
+          return color;
+        })
         .arcAltitude((e) => {
           return (e as { arcAlt: number }).arcAlt * 1;
         })
@@ -229,7 +253,22 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
       globeRef.current
         .pointsData(validPointsData)
-        .pointColor((e) => (e as { color: string }).color)
+        .pointColor((e) => {
+          // The color function should already return a valid rgba string
+          // But let's add an extra check
+          const colorFn = (e as { color: any }).color;
+          if (typeof colorFn === "function") {
+            try {
+              const result = colorFn(0);
+              return typeof result === "string"
+                ? result
+                : "rgba(59, 130, 246, 1)";
+            } catch (err) {
+              return "rgba(59, 130, 246, 1)";
+            }
+          }
+          return "rgba(59, 130, 246, 1)";
+        })
         .pointsMerge(true)
         .pointAltitude(0.0)
         .pointRadius(2);
@@ -237,7 +276,16 @@ export function Globe({ globeConfig, data }: WorldProps) {
       // Empty rings to start with
       globeRef.current
         .ringsData([])
-        .ringColor((e: any) => (t: any) => e.color(t))
+        .ringColor((e: any) => (t: any) => {
+          try {
+            if (typeof e.color === "function") {
+              return e.color(t);
+            }
+            return `rgba(59, 130, 246, ${1 - t})`;
+          } catch (err) {
+            return `rgba(59, 130, 246, ${1 - t})`;
+          }
+        })
         .ringMaxRadius(defaultProps.maxRings)
         .ringPropagationSpeed(RING_PROPAGATION_SPEED)
         .ringRepeatPeriod(
@@ -332,7 +380,13 @@ export function World(props: WorldProps) {
   );
 }
 
-export function hexToRgb(hex: string) {
+export function hexToRgb(hex: any) {
+  // Check if hex is a string and has a valid format
+  if (typeof hex !== "string" || !hex) {
+    console.warn("Invalid hex color:", hex);
+    return { r: 59, g: 130, b: 246 }; // Default to #3b82f6
+  }
+
   var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function (m, r, g, b) {
     return r + r + g + g + b + b;
@@ -345,7 +399,7 @@ export function hexToRgb(hex: string) {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16),
       }
-    : null;
+    : { r: 59, g: 130, b: 246 }; // Default to #3b82f6
 }
 
 export function genRandomNumbers(min: number, max: number, count: number) {
