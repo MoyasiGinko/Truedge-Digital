@@ -5,7 +5,7 @@ import { ThemeProvider } from "./utils/ThemeProvider";
 import { CursorProvider } from "./utils/CursorProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { BubbleCursorWithClick } from "@/components/ui/BubbleCursor";
+import EnhancedBubbleCursor from "@/components/ui/BubbleCursor";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,12 +29,18 @@ export default function RootLayout({
         >
           <CursorProvider>
             {/* Add the bubble cursor */}
-            <BubbleCursorWithClick
+            <EnhancedBubbleCursor
               size={80}
-              color="rgba(56,189,248,0.6)"
-              blur={5}
-              opacity={0.7}
-              followSpeed={0.1}
+              followSpeed={0.2}
+              primaryColor="rgba(56,189,248,0.7)"
+              secondaryColor="rgba(99,102,241,0.3)"
+              glowColor="rgba(56,189,248,0.5)"
+              enablePulse={true}
+              pulseIntensity={0.05}
+              enableRotation={true}
+              enableFloat={true}
+              opacity={0.9}
+              innerGlowOpacity={0.9}
             />
             <Header />
             {children}
