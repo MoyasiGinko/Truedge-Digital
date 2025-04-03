@@ -6,6 +6,7 @@ import ThreeGlobe from "three-globe";
 import { useThree, Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import countries from "@/data/globe.json";
+
 declare module "@react-three/fiber" {
   interface ThreeElements {
     threeGlobe: JSX.IntrinsicElements["object3D"] & {
@@ -71,6 +72,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
         color: (t: number) => string;
         lat: number;
         lng: number;
+        pointType?: "start" | "end";
       }[]
     | null
   >(null);
@@ -125,7 +127,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
         !isNaN(arc.endLat) &&
         !isNaN(arc.endLng) &&
         !isNaN(arc.arcAlt) &&
-        typeof arc.color === "string" // Add this check
+        typeof arc.color === "string"
       );
     });
 
@@ -146,6 +148,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
           `rgba(${safeRgb.r}, ${safeRgb.g}, ${safeRgb.b}, ${1 - t})`,
         lat: arc.startLat,
         lng: arc.startLng,
+        pointType: "start" as "start",
       });
       points.push({
         size: defaultProps.pointSize,
@@ -154,6 +157,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
           `rgba(${safeRgb.r}, ${safeRgb.g}, ${safeRgb.b}, ${1 - t})`,
         lat: arc.endLat,
         lng: arc.endLng,
+        pointType: "end" as "end",
       });
     }
 
@@ -252,26 +256,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
       );
 
       globeRef.current
-        .pointsData(validPointsData)
-        .pointColor((e) => {
-          // The color function should already return a valid rgba string
-          // But let's add an extra check
-          const colorFn = (e as { color: any }).color;
-          if (typeof colorFn === "function") {
-            try {
-              const result = colorFn(0);
-              return typeof result === "string"
-                ? result
-                : "rgba(59, 130, 246, 1)";
-            } catch (err) {
-              return "rgba(59, 130, 246, 1)";
-            }
-          }
-          return "rgba(59, 130, 246, 1)";
-        })
-        .pointsMerge(true)
-        .pointAltitude(0.0)
-        .pointRadius(2);
+        // Remove points data configuration
+        .pointsData([]);
 
       // Empty rings to start with
       globeRef.current
