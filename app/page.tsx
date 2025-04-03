@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import Hero from "@/components/Hero";
 import Grid from "@/components/Grids";
+import RecentProjects from "@/components/Projects";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
         <Header />
         <Hero />
         <Grid />
+        <RecentProjects />
       </div>
     </main>
   );
