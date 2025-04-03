@@ -493,13 +493,13 @@ export default function FluidAdaptiveCursor() {
   return (
     <FluidCursor
       size={70}
-      followSpeed={3}
+      followSpeed={2}
       primaryColor="rgba(56,189,248,0.5)"
       secondaryColor="rgba(59,130,246,0.4)"
       glowColor="rgba(56,189,248,0.4)"
       fluidIntensity={0.08}
       rippleSpeed={1.5}
-      waterOpacity={0.75}
+      waterOpacity={0.9}
       buttonMorphing={true}
       adaptButtonColor={true}
       maxMorphWidth={300}
