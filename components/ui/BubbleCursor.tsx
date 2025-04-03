@@ -9,126 +9,322 @@ import {
   animate,
 } from "framer-motion";
 
-interface BubbleCursorProps {
+interface FluidCursorProps {
   size?: number;
   primaryColor?: string;
   secondaryColor?: string;
   glowColor?: string;
   highlightColor?: string;
   followSpeed?: number;
-  enablePulse?: boolean;
-  pulseIntensity?: number;
-  enableRotation?: boolean;
-  enableFloat?: boolean;
-  opacity?: number;
-  innerGlowOpacity?: number;
+  fluidIntensity?: number;
+  rippleSpeed?: number;
+  waterOpacity?: number;
   enableInteractivity?: boolean;
+  buttonMorphing?: boolean;
+  adaptButtonColor?: boolean;
+  maxMorphWidth?: number;
+  maxMorphHeight?: number;
+  cornerRadius?: number;
 }
 
-const EnhancedBubbleCursor: React.FC<BubbleCursorProps> = ({
+const FluidCursor: React.FC<FluidCursorProps> = ({
   size = 60,
-  primaryColor = "rgba(56,189,248,0.7)",
-  secondaryColor = "rgba(99,102,241,0.3)",
+  primaryColor = "rgba(56,189,248,0.5)",
+  secondaryColor = "rgba(59,130,246,0.3)",
   glowColor = "rgba(56,189,248,0.4)",
-  highlightColor = "rgba(255,255,255,0.9)",
+  highlightColor = "rgba(255,255,255,0.6)",
   followSpeed = 6.0,
-  enablePulse = true,
-  pulseIntensity = 0.05,
-  enableRotation = true,
-  enableFloat = true,
-  opacity = 0.85,
-  innerGlowOpacity = 0.7,
+  fluidIntensity = 0.08,
+  rippleSpeed = 1.5,
+  waterOpacity = 0.75,
   enableInteractivity = true,
+  buttonMorphing = true,
+  adaptButtonColor = true,
+  maxMorphWidth = 300, // Maximum width when morphing
+  maxMorphHeight = 150, // Maximum height when morphing
+  cornerRadius = 12,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
+  const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
+  const [buttonColors, setButtonColors] = useState({
+    primary: primaryColor,
+    secondary: secondaryColor,
+    highlight: highlightColor,
+  });
+  const [morphDimensions, setMorphDimensions] = useState({
+    width: size,
+    height: size,
+    isMorphed: false,
+    cornerRadius: cornerRadius,
+  });
+  const prevMorphState = useRef(false);
 
   // Mouse position with spring physics for smoother following
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Apply ultra-fast spring physics with minimal damping for instant following
+  // Apply fluid physics with appropriate damping for watery movement
   const springConfig = {
-    damping: 12,
-    stiffness: 750 * followSpeed,
-    mass: 0.2,
+    damping: 15, // Slightly higher damping for water-like oscillation
+    stiffness: 200 * followSpeed, // Lower stiffness for fluid movement
+    mass: 0.6, // Higher mass for liquid-like momentum
   };
 
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
-  // Advanced animation values
-  const pulseSize = useMotionValue(1);
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const floatY = useMotionValue(0);
+  // Water animation values
+  const wavePhase1 = useMotionValue(0);
+  const wavePhase2 = useMotionValue(0);
+  const wavePhase3 = useMotionValue(0);
+  const rippleScale = useMotionValue(1);
 
-  // Derived transforms
-  const scale = useTransform(
-    pulseSize,
-    [1 - pulseIntensity, 1 + pulseIntensity],
-    [1 - pulseIntensity, 1 + pulseIntensity]
+  // Dynamic border radius for morphing
+  const borderRadius = useSpring(size / 2, {
+    damping: 20,
+    stiffness: 300,
+  });
+
+  // Width and height for morphing
+  const width = useSpring(size, {
+    damping: 20,
+    stiffness: 300,
+  });
+
+  const height = useSpring(size, {
+    damping: 20,
+    stiffness: 300,
+  });
+
+  // Fluid wave distortions
+  const distortX = useTransform(
+    wavePhase1,
+    [0, Math.PI, 2 * Math.PI],
+    [-fluidIntensity * size, fluidIntensity * size, -fluidIntensity * size]
   );
 
-  // Init animations
+  const distortY = useTransform(
+    wavePhase2,
+    [0, Math.PI, 2 * Math.PI],
+    [fluidIntensity * size, -fluidIntensity * size, fluidIntensity * size]
+  );
+
+  // Water ripple effect
+  const ripple = useTransform(rippleScale, [1, 1.05, 1], [1, 1.05, 1]);
+
+  // Init water animations
   useEffect(() => {
-    const animations: ReturnType<typeof animate>[] = [];
+    // Generate continuous fluid motion
+    const animations = [
+      // Primary wave
+      animate(wavePhase1, [0, 2 * Math.PI], {
+        duration: 3 / rippleSpeed,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "loop",
+      }),
 
-    // Pulse animation
-    if (enablePulse) {
-      const pulseAnimation = animate(
-        pulseSize,
-        [1, 1 + pulseIntensity, 1, 1 - pulseIntensity, 1],
-        {
-          duration: 3.5,
-          ease: "easeInOut",
-          repeat: Infinity,
-          repeatType: "mirror",
-        }
-      );
-      animations.push(pulseAnimation);
-    }
+      // Secondary wave (slightly out of phase)
+      animate(wavePhase2, [Math.PI / 2, 2.5 * Math.PI], {
+        duration: 2.7 / rippleSpeed,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "loop",
+      }),
 
-    // Gentle floating animation
-    if (enableFloat) {
-      const floatAnimation = animate(floatY, [0, -3, 0, 3, 0], {
-        duration: 5,
+      // Tertiary wave (different phase)
+      animate(wavePhase3, [Math.PI, 3 * Math.PI], {
+        duration: 4.2 / rippleSpeed,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "loop",
+      }),
+
+      // Ripple pulsation
+      animate(rippleScale, [1, 1.05, 1, 0.98, 1], {
+        duration: 3.5,
         ease: "easeInOut",
         repeat: Infinity,
         repeatType: "mirror",
-      });
-      animations.push(floatAnimation);
-    }
+      }),
+    ];
 
-    // Cleanup animations on unmount
     return () => {
       animations.forEach((anim) => anim.stop());
     };
-  }, [enablePulse, enableFloat, pulseIntensity]);
+  }, [rippleSpeed]);
+
+  // Extract color from element
+  const getElementColors = (element: HTMLElement) => {
+    const computedStyle = window.getComputedStyle(element);
+    let bgColor = computedStyle.backgroundColor;
+
+    // Convert rgba(0,0,0,0) or transparent to undefined
+    if (bgColor === "rgba(0, 0, 0, 0)" || bgColor === "transparent") {
+      // Try to get background from parent elements (limited depth)
+      let parent = element.parentElement;
+      let searchDepth = 0;
+      const maxDepth = 3;
+
+      while (parent && searchDepth < maxDepth) {
+        const parentStyle = window.getComputedStyle(parent);
+        const parentBg = parentStyle.backgroundColor;
+
+        if (parentBg !== "rgba(0, 0, 0, 0)" && parentBg !== "transparent") {
+          bgColor = parentBg;
+          break;
+        }
+
+        parent = parent.parentElement;
+        searchDepth++;
+      }
+    }
+
+    // If we still don't have a valid color, return default colors
+    if (bgColor === "rgba(0, 0, 0, 0)" || bgColor === "transparent") {
+      return {
+        primary: primaryColor,
+        secondary: secondaryColor,
+        highlight: highlightColor,
+      };
+    }
+
+    // Parse the background color
+    let r,
+      g,
+      b,
+      a = 1;
+
+    if (bgColor.startsWith("rgba")) {
+      const parts = bgColor.match(
+        /rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/
+      );
+      if (parts) {
+        [, r, g, b, a] = parts.map(Number);
+      }
+    } else if (bgColor.startsWith("rgb")) {
+      const parts = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (parts) {
+        [, r, g, b] = parts.map(Number);
+      }
+    }
+
+    if (r !== undefined && g !== undefined && b !== undefined) {
+      // Create derived colors with proper opacity
+      return {
+        primary: `rgba(${r}, ${g}, ${b}, ${Math.min(0.5, a)})`,
+        secondary: `rgba(${r}, ${g}, ${b}, ${Math.min(0.3, a)})`,
+        highlight: `rgba(255, 255, 255, 0.6)`,
+      };
+    }
+
+    return {
+      primary: primaryColor,
+      secondary: secondaryColor,
+      highlight: highlightColor,
+    };
+  };
+
+  // Handle morphing between circle and button shape
+  useEffect(() => {
+    if (targetElement && buttonMorphing) {
+      const rect = targetElement.getBoundingClientRect();
+
+      // Get button's border-radius if available
+      const computedStyle = window.getComputedStyle(targetElement);
+      const buttonBorderRadius =
+        parseInt(computedStyle.borderRadius) || cornerRadius;
+
+      // Get button dimensions with safety limits
+      const buttonWidth = Math.min(rect.width + 8, maxMorphWidth);
+      const buttonHeight = Math.min(rect.height + 8, maxMorphHeight);
+
+      // Skip morphing for extremely large elements (likely special designs)
+      const isTooLarge =
+        rect.width > maxMorphWidth * 1.5 || rect.height > maxMorphHeight * 1.5;
+
+      if (!isTooLarge) {
+        // Update morph dimensions
+        setMorphDimensions({
+          width: buttonWidth,
+          height: buttonHeight,
+          isMorphed: true,
+          cornerRadius: buttonBorderRadius,
+        });
+
+        // Extract button colors if enabled
+        if (adaptButtonColor) {
+          setButtonColors(getElementColors(targetElement));
+        }
+      } else {
+        // For oversized elements, just adapt color but not shape
+        if (adaptButtonColor) {
+          setButtonColors(getElementColors(targetElement));
+        }
+
+        setMorphDimensions({
+          width: size,
+          height: size,
+          isMorphed: false,
+          cornerRadius: size / 2,
+        });
+      }
+    } else {
+      // Reset to default state
+      setMorphDimensions({
+        width: size,
+        height: size,
+        isMorphed: false,
+        cornerRadius: size / 2, // Circle
+      });
+
+      // Reset colors to defaults
+      setButtonColors({
+        primary: primaryColor,
+        secondary: secondaryColor,
+        highlight: highlightColor,
+      });
+    }
+  }, [
+    targetElement,
+    buttonMorphing,
+    adaptButtonColor,
+    size,
+    cornerRadius,
+    maxMorphWidth,
+    maxMorphHeight,
+  ]);
+
+  // Apply morphing changes
+  useEffect(() => {
+    // Animate changes with fluid transitions
+    animate(width, morphDimensions.width, {
+      type: "spring",
+      damping: 20,
+      stiffness: 200,
+    });
+
+    animate(height, morphDimensions.height, {
+      type: "spring",
+      damping: 20,
+      stiffness: 200,
+    });
+
+    animate(borderRadius, morphDimensions.cornerRadius, {
+      type: "spring",
+      damping: 20,
+      stiffness: 200,
+    });
+
+    prevMorphState.current = morphDimensions.isMorphed;
+  }, [morphDimensions, width, height, borderRadius]);
 
   useEffect(() => {
     // Track mouse movement
     const handleMouseMove = (e: MouseEvent) => {
-      // For smoother updates
       requestAnimationFrame(() => {
         mouseX.set(e.clientX);
         mouseY.set(e.clientY);
-
-        // 3D rotation effect based on mouse velocity
-        if (enableRotation) {
-          const dx = e.movementX;
-          const dy = e.movementY;
-
-          // Apply subtle rotation based on mouse movement
-          rotateX.set(-dy * 0.7);
-          rotateY.set(dx * 0.7);
-
-          // Reset rotation gradually when mouse stops
-          setTimeout(() => {
-            animate(rotateX, 0, { duration: 0.8, ease: "easeOut" });
-            animate(rotateY, 0, { duration: 0.8, ease: "easeOut" });
-          }, 100);
-        }
       });
 
       if (!isVisible) {
@@ -138,17 +334,25 @@ const EnhancedBubbleCursor: React.FC<BubbleCursorProps> = ({
       // Check if hovering over interactive elements
       if (enableInteractivity) {
         const target = e.target as HTMLElement;
-        const isInteractive = !!(
+        const isButton = !!(
           target.tagName === "BUTTON" ||
           target.tagName === "A" ||
-          target.tagName === "INPUT" ||
           target.closest("button") ||
           target.closest("a") ||
           target.getAttribute("role") === "button" ||
           target.classList.contains("interactive")
         );
 
-        setIsHovering(isInteractive);
+        // Handle elements with data-no-cursor attribute
+        const hasNoMorph =
+          target.hasAttribute("data-no-cursor") ||
+          target.closest("[data-no-cursor]");
+
+        if (isButton && !hasNoMorph) {
+          setTargetElement(target);
+        } else {
+          setTargetElement(null);
+        }
       }
     };
 
@@ -166,101 +370,141 @@ const EnhancedBubbleCursor: React.FC<BubbleCursorProps> = ({
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
     };
-  }, [isVisible, mouseX, mouseY, enableRotation, enableInteractivity]);
+  }, [isVisible, mouseX, mouseY, enableInteractivity]);
 
-  // Main bubble style with enhanced 3D effects
-  const bubbleStyle = {
-    position: "fixed" as const,
-    pointerEvents: "none" as const,
-    zIndex: 999,
-    borderRadius: "50%",
-    width: `${size}px`,
-    height: `${size}px`,
-    opacity: isVisible ? opacity : 0,
-    // Position so cursor is at center
-    top: -size / 2,
-    left: -size / 2,
-    // Enhanced 3D look with multiple layers
-    background: `
-      radial-gradient(circle at 30% 30%,
-        ${highlightColor} 0%,
-        ${primaryColor} 35%,
-        ${secondaryColor} 80%)
-    `,
-    boxShadow: `
-      0 0 15px ${glowColor},
-      0 0 25px ${glowColor},
-      inset 0 0 15px rgba(255,255,255,${innerGlowOpacity})
-    `,
-    // Subtle glass effect
-    backdropFilter: "blur(2px)",
-    transition: "opacity 0.2s ease, box-shadow 0.3s ease",
-  };
+  // Calculate position offset for morphing
+  const offsetX = useTransform(
+    [width, distortX],
+    ([w, dX]: number[]) => -w / 2 + dX
+  );
+
+  const offsetY = useTransform(
+    [height, distortY],
+    ([h, dY]: number[]) => -h / 2 + dY
+  );
 
   return (
-    <motion.div
-      style={{
-        ...bubbleStyle,
-        x,
-        // Removed duplicate y property
-        y: useTransform(
-          [y, floatY],
-          (values: number[]) => values[0] + values[1]
-        ),
-        scale: enablePulse ? scale : undefined,
-        rotateX: rotateX,
-        rotateY: rotateY,
-      }}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{
-        scale: isHovering
-          ? enablePulse
-            ? scale.get() * 1.3
-            : 1.3
-          : enablePulse
-          ? scale.get()
-          : 1,
-        opacity: isVisible ? opacity : 0,
-      }}
-      transition={{
-        scale: { duration: 0.25, ease: "easeOut" },
-        opacity: { duration: 0.2 },
-      }}
-    >
-      {/* Inner highlight for 3D effect */}
-      <div
+    <>
+      {/* Main fluid cursor */}
+      <motion.div
         style={{
-          position: "absolute",
-          top: "10%",
-          left: "10%",
-          width: "35%",
-          height: "35%",
-          borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 80%)`,
-          opacity: 0.7,
+          position: "fixed",
+          pointerEvents: "none",
+          zIndex: 999,
+          width,
+          height,
+          borderRadius,
+          opacity: isVisible ? waterOpacity : 0,
+          x,
+          y,
+          top: offsetY,
+          left: offsetX,
+          // Water-like appearance with gradient (using button colors when available)
+          background: `
+            radial-gradient(circle at 40% 40%,
+              ${buttonColors.highlight} 0%,
+              ${buttonColors.primary} 40%,
+              ${buttonColors.secondary} 90%)
+          `,
+          boxShadow: `
+            0 0 20px ${glowColor},
+            inset 0 0 8px rgba(255,255,255,0.6)
+          `,
+          // Glass effect
+          backdropFilter: "blur(3px)",
+          transition: "opacity 0.3s ease",
+          scale: ripple,
         }}
-      />
-    </motion.div>
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: isVisible ? waterOpacity : 0,
+        }}
+        transition={{
+          opacity: { duration: 0.3, ease: "easeOut" },
+        }}
+      >
+        {/* Water surface highlight */}
+        <motion.div
+          style={{
+            position: "absolute",
+            top: "15%",
+            left: "15%",
+            width: "50%",
+            height: "25%",
+            borderRadius: "50%",
+            background: `radial-gradient(
+              ellipse,
+              rgba(255,255,255,0.7) 0%,
+              rgba(255,255,255,0) 70%
+            )`,
+            opacity: 0.6,
+            // Subtle movement to simulate water surface
+            y: useTransform(wavePhase3, [0, Math.PI, 2 * Math.PI], [-2, 2, -2]),
+            x: useTransform(wavePhase2, [0, Math.PI, 2 * Math.PI], [-1, 1, -1]),
+          }}
+        />
+
+        {/* Secondary water reflection */}
+        <motion.div
+          style={{
+            position: "absolute",
+            bottom: "20%",
+            right: "25%",
+            width: "30%",
+            height: "15%",
+            borderRadius: "50%",
+            background: `radial-gradient(
+              ellipse,
+              rgba(255,255,255,0.5) 0%,
+              rgba(255,255,255,0) 70%
+            )`,
+            opacity: 0.4,
+            // Out of phase with primary highlight
+            y: useTransform(wavePhase1, [0, Math.PI, 2 * Math.PI], [1, -1, 1]),
+            x: useTransform(wavePhase3, [0, Math.PI, 2 * Math.PI], [1, -1, 1]),
+          }}
+        />
+
+        {/* Water ripples */}
+        <motion.div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            borderRadius: "inherit",
+            border: `1px solid rgba(255,255,255,0.2)`,
+            boxSizing: "border-box",
+            opacity: useTransform(
+              wavePhase1,
+              [0, Math.PI, 2 * Math.PI],
+              [0.1, 0.3, 0.1]
+            ),
+          }}
+        />
+      </motion.div>
+    </>
   );
 };
 
-// Default export with optimal 3D settings
-export default EnhancedBubbleCursor;
-
-function EnhancedBubbleCursorWrapper() {
+// Default export with optimal water settings
+export default function FluidAdaptiveCursor() {
   return (
-    <EnhancedBubbleCursor
-      size={65}
-      followSpeed={6}
-      primaryColor="rgba(56,189,248,0.7)"
-      secondaryColor="rgba(99,102,241,0.3)"
-      glowColor="rgba(56,189,248,0.5)"
-      enablePulse={true}
-      pulseIntensity={0.05}
-      enableRotation={true}
-      enableFloat={true}
-      opacity={0.85}
-      innerGlowOpacity={0.7}
+    <FluidCursor
+      size={60}
+      followSpeed={3}
+      primaryColor="rgba(56,189,248,0.5)"
+      secondaryColor="rgba(59,130,246,0.4)"
+      glowColor="rgba(56,189,248,0.4)"
+      fluidIntensity={0.08}
+      rippleSpeed={1.5}
+      waterOpacity={0.75}
+      buttonMorphing={true}
+      adaptButtonColor={true}
+      maxMorphWidth={300}
+      maxMorphHeight={150}
+      cornerRadius={12}
     />
   );
 }
