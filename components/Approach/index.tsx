@@ -8,17 +8,17 @@ const Approach = () => {
   return (
     <section className="w-full py-20">
       <h1 className="heading">
-        My <span className="text-purple">approach</span>
+        Our <span className="text-purple">approach</span>
       </h1>
       {/* remove bg-white dark:bg-black */}
       <div className="my-20 flex flex-col lg:flex-row items-center justify-center w-full gap-4">
         {/* add des prop */}
         <Card
-          title="Planning & Strategy"
+          title="Web Design & Planning"
           icon={<AceternityIcon order="Phase 1" />}
-          des="We'll collaborate to map out your website's goals, target audience,
-          and key functionalities. We'll discuss things like site structure,
-          navigation, and content requirements."
+          des="After a quick chat, I dive into research and sketching. I create a
+          wireframe and a mood board to set the vibe. I also share a project
+          plan with you, so we’re on the same page."
         >
           <CanvasRevealEffect
             animationSpeed={5.1}
@@ -27,11 +27,11 @@ const Approach = () => {
           />
         </Card>
         <Card
-          title="Development & Progress Update"
+          title="Development & Updates"
           icon={<AceternityIcon order="Phase 2" />}
-          des="Once we agree on the plan, I cue my lofi playlist and dive into
-          coding. From initial sketches to polished code, I keep you updated
-          every step of the way."
+          des="Once the design is approved, I start coding. I keep you in the loop
+          with regular updates and feedback sessions. I also make sure the
+          website is responsive and works well on all devices."
         >
           <CanvasRevealEffect
             animationSpeed={3}
@@ -49,11 +49,11 @@ const Approach = () => {
           {/* <div className="absolute inset-0 [mask-image:radial-gradient(400px_at_center,white,transparent)] bg-black/50 dark:bg-black/90" /> */}
         </Card>
         <Card
-          title="Development & Launch"
+          title="SEO & Launch"
           icon={<AceternityIcon order="Phase 3" />}
-          des="This is where the magic happens! Based on the approved design,
-          I'll translate everything into functional code, building your website
-          from the ground up."
+          des="After the website is ready, I optimize it for search engines. I also
+          set up analytics to track performance. Once everything is perfect, I
+          launch the website and make it live for everyone to see."
         >
           <CanvasRevealEffect
             animationSpeed={3}

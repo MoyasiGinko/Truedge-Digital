@@ -15,10 +15,10 @@ interface BubbleCursorProps {
 export const BubbleCursor: React.FC<BubbleCursorProps> = ({
   size = 80,
   color = "rgba(56,189,248,0.6)",
-  delay = 0.08,
+  delay = 0.02, // Reduced delay from 0.08 to 0.02
   blur = 5,
   opacity = 0.7,
-  followSpeed = 0.1,
+  followSpeed = 0.8, // Increased from 0.1 to 0.8 for faster following
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -26,16 +26,23 @@ export const BubbleCursor: React.FC<BubbleCursorProps> = ({
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Apply spring physics for smooth following with delay
-  const springConfig = { damping: 25, stiffness: 300 * followSpeed };
+  // Apply faster spring physics with less damping for quicker follow
+  // Higher stiffness and lower damping = faster following
+  const springConfig = {
+    damping: 12, // Reduced from 25 for less resistance
+    stiffness: 400 * followSpeed, // Increased from 300 for more responsiveness
+  };
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
   useEffect(() => {
     // Track mouse movement
     const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+      // Using requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        mouseX.set(e.clientX);
+        mouseY.set(e.clientY);
+      });
 
       if (!isVisible) {
         setIsVisible(true);
@@ -53,7 +60,7 @@ export const BubbleCursor: React.FC<BubbleCursorProps> = ({
     };
 
     // Add event listeners
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true }); // Added passive for performance
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
 
@@ -99,7 +106,7 @@ export const BubbleCursor: React.FC<BubbleCursorProps> = ({
         scale: isVisible ? 1 : 0.8,
       }}
       transition={{
-        scale: { duration: 0.3 },
+        scale: { duration: 0.2 }, // Faster scale transition (from 0.3 to 0.2)
       }}
     />
   );
@@ -107,6 +114,13 @@ export const BubbleCursor: React.FC<BubbleCursorProps> = ({
 
 // Create a version with click effects
 export const BubbleCursorWithClick: React.FC<BubbleCursorProps> = (props) => {
+  // Use default props with faster following
+  const defaultProps = {
+    followSpeed: 0.8, // Faster following
+    delay: 0.02, // Reduced delay
+    ...props,
+  };
+
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
   );
@@ -134,7 +148,7 @@ export const BubbleCursorWithClick: React.FC<BubbleCursorProps> = (props) => {
 
   return (
     <>
-      <BubbleCursor {...props} />
+      <BubbleCursor {...defaultProps} />
 
       {/* Render click effects */}
       {clicks.map((click) => (
@@ -152,12 +166,12 @@ export const BubbleCursorWithClick: React.FC<BubbleCursorProps> = (props) => {
           }}
           initial={{ width: 0, height: 0, opacity: 0.7 }}
           animate={{
-            width: props.size ? props.size * 2 : 160,
-            height: props.size ? props.size * 2 : 160,
+            width: defaultProps.size ? defaultProps.size * 2 : 160,
+            height: defaultProps.size ? defaultProps.size * 2 : 160,
             opacity: 0,
           }}
           transition={{
-            duration: 0.6,
+            duration: 0.4, // Faster animation (from 0.6 to 0.4)
             ease: "easeOut",
           }}
         />
