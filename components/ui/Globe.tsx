@@ -151,27 +151,44 @@ export function Globe({ globeConfig, data }: WorldProps) {
     setGlobeData(filteredPoints);
   };
 
+  // Add error handling for globe data parsing
   useEffect(() => {
     if (globeRef.current && globeData) {
-      globeRef.current
-        .hexPolygonsData(countries.features)
-        .hexPolygonResolution(3)
-        .hexPolygonMargin(0.7)
-        .showAtmosphere(defaultProps.showAtmosphere)
-        .atmosphereColor(defaultProps.atmosphereColor)
-        .atmosphereAltitude(defaultProps.atmosphereAltitude)
-        .hexPolygonColor((e) => {
-          return defaultProps.polygonColor;
-        });
-      startAnimation();
+      try {
+        globeRef.current
+          .hexPolygonsData(countries.features)
+          .hexPolygonResolution(3)
+          .hexPolygonMargin(0.7)
+          .showAtmosphere(defaultProps.showAtmosphere)
+          .atmosphereColor(defaultProps.atmosphereColor)
+          .atmosphereAltitude(defaultProps.atmosphereAltitude)
+          .hexPolygonColor((e) => {
+            return defaultProps.polygonColor;
+          });
+        startAnimation();
+      } catch (error) {
+        console.error("Globe initialization error:", error);
+      }
     }
   }, [globeData]);
 
   const startAnimation = () => {
     if (!globeRef.current || !globeData) return;
 
+    // Validate data before using it
+    const validArcs = data.filter((arc) => {
+      // Check for NaN values
+      return (
+        !isNaN(arc.startLat) &&
+        !isNaN(arc.startLng) &&
+        !isNaN(arc.endLat) &&
+        !isNaN(arc.endLng) &&
+        !isNaN(arc.arcAlt)
+      );
+    });
+
     globeRef.current
-      .arcsData(data)
+      .arcsData(validArcs)
       .arcStartLat((d) => (d as { startLat: number }).startLat * 1)
       .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
       .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
