@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Image from "next/image";
 import Hero from "@/components/Hero";
+import Grid from "@/components/Grids";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <div className="max-w-7xl w-full">
         <Header />
         <Hero />
+        <Grid />
       </div>
     </main>
   );
