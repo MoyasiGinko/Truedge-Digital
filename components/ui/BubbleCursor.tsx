@@ -390,7 +390,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
         style={{
           position: "fixed",
           pointerEvents: "none",
-          zIndex: 999,
+          zIndex: 999999,
           width,
           height,
           borderRadius,
