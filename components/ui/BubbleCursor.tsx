@@ -492,7 +492,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
 export default function FluidAdaptiveCursor() {
   return (
     <FluidCursor
-      size={60}
+      size={80}
       followSpeed={3}
       primaryColor="rgba(56,189,248,0.5)"
       secondaryColor="rgba(59,130,246,0.4)"
