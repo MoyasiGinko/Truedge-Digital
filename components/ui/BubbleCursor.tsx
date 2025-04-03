@@ -15,6 +15,9 @@ interface FluidCursorProps {
   secondaryColor?: string;
   glowColor?: string;
   highlightColor?: string;
+  hoverColor?: string; // Add new prop for hover color
+  hoverSecondaryColor?: string; // Add new prop for hover secondary color
+  hoverGlowColor?: string; // Add new prop for hover glow color
   followSpeed?: number;
   fluidIntensity?: number;
   rippleSpeed?: number;
@@ -33,6 +36,9 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
   secondaryColor = "rgba(59,130,246,0.3)",
   glowColor = "rgba(56,189,248,0.4)",
   highlightColor = "rgba(255,255,255,0.6)",
+  hoverColor = "rgba(32,204,22,0.6)", // Lime/green color for hover state
+  hoverSecondaryColor = "rgba(41,163,13,0.4)", // Darker lime for hover secondary
+  hoverGlowColor = "rgba(52,204,22,0.5)", // Lime glow for hover
   followSpeed = 6.0,
   fluidIntensity = 0.08,
   rippleSpeed = 1.5,
@@ -46,10 +52,12 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
+  const [isHovering, setIsHovering] = useState(false); // Add state to track hover
   const [buttonColors, setButtonColors] = useState({
     primary: primaryColor,
     secondary: secondaryColor,
     highlight: highlightColor,
+    glow: glowColor,
   });
   const [morphDimensions, setMorphDimensions] = useState({
     width: size,
@@ -156,6 +164,16 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
 
   // Extract color from element
   const getElementColors = (element: HTMLElement) => {
+    // Check if we're in hover mode - if so, return lime colors
+    if (isHovering && !adaptButtonColor) {
+      return {
+        primary: hoverColor,
+        secondary: hoverSecondaryColor,
+        highlight: highlightColor,
+        glow: hoverGlowColor,
+      };
+    }
+
     const computedStyle = window.getComputedStyle(element);
     let bgColor = computedStyle.backgroundColor;
 
@@ -180,12 +198,23 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
       }
     }
 
-    // If we still don't have a valid color, return default colors
-    if (bgColor === "rgba(0, 0, 0, 0)" || bgColor === "transparent") {
+    // If we still don't have a valid color, use hover colors if hovering
+    if (
+      (bgColor === "rgba(0, 0, 0, 0)" || bgColor === "transparent") &&
+      isHovering
+    ) {
+      return {
+        primary: hoverColor,
+        secondary: hoverSecondaryColor,
+        highlight: highlightColor,
+        glow: hoverGlowColor,
+      };
+    } else if (bgColor === "rgba(0, 0, 0, 0)" || bgColor === "transparent") {
       return {
         primary: primaryColor,
         secondary: secondaryColor,
         highlight: highlightColor,
+        glow: glowColor,
       };
     }
 
@@ -210,18 +239,30 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
     }
 
     if (r !== undefined && g !== undefined && b !== undefined) {
+      // If we're hovering and not adapting color, use lime
+      if (isHovering && !adaptButtonColor) {
+        return {
+          primary: hoverColor,
+          secondary: hoverSecondaryColor,
+          highlight: highlightColor,
+          glow: hoverGlowColor,
+        };
+      }
+
       // Create derived colors with proper opacity
       return {
         primary: `rgba(${r}, ${g}, ${b}, ${Math.min(0.5, a)})`,
         secondary: `rgba(${r}, ${g}, ${b}, ${Math.min(0.3, a)})`,
         highlight: `rgba(255, 255, 255, 0.6)`,
+        glow: `rgba(${r}, ${g}, ${b}, ${Math.min(0.4, a)})`,
       };
     }
 
     return {
-      primary: primaryColor,
-      secondary: secondaryColor,
+      primary: isHovering ? hoverColor : primaryColor,
+      secondary: isHovering ? hoverSecondaryColor : secondaryColor,
       highlight: highlightColor,
+      glow: isHovering ? hoverGlowColor : glowColor,
     };
   };
 
@@ -253,14 +294,10 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
         });
 
         // Extract button colors if enabled
-        if (adaptButtonColor) {
-          setButtonColors(getElementColors(targetElement));
-        }
+        setButtonColors(getElementColors(targetElement));
       } else {
         // For oversized elements, just adapt color but not shape
-        if (adaptButtonColor) {
-          setButtonColors(getElementColors(targetElement));
-        }
+        setButtonColors(getElementColors(targetElement));
 
         setMorphDimensions({
           width: size,
@@ -278,11 +315,12 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
         cornerRadius: size / 2, // Circle
       });
 
-      // Reset colors to defaults
+      // Reset colors to defaults - use hover colors if hovering
       setButtonColors({
-        primary: primaryColor,
-        secondary: secondaryColor,
+        primary: isHovering ? hoverColor : primaryColor,
+        secondary: isHovering ? hoverSecondaryColor : secondaryColor,
         highlight: highlightColor,
+        glow: isHovering ? hoverGlowColor : glowColor,
       });
     }
   }, [
@@ -293,6 +331,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
     cornerRadius,
     maxMorphWidth,
     maxMorphHeight,
+    isHovering, // Add isHovering as dependency
   ]);
 
   // Apply morphing changes
@@ -320,6 +359,12 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
   }, [morphDimensions, width, height, borderRadius]);
 
   useEffect(() => {
+    // Center the cursor initially
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    mouseX.set(centerX);
+    mouseY.set(centerY);
+
     // Track mouse movement
     const handleMouseMove = (e: MouseEvent) => {
       requestAnimationFrame(() => {
@@ -348,6 +393,9 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
           target.hasAttribute("data-no-cursor") ||
           target.closest("[data-no-cursor]");
 
+        // Update hovering state
+        setIsHovering(isButton && !hasNoMorph);
+
         if (isButton && !hasNoMorph) {
           setTargetElement(target);
         } else {
@@ -356,17 +404,27 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
       }
     };
 
+    // Handle window resize to keep cursor centered when window size changes
+    const handleResize = () => {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      mouseX.set(centerX);
+      mouseY.set(centerY);
+    };
+
     // Window events
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
 
     // Register events
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("resize", handleResize);
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", handleResize);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
     };
@@ -399,7 +457,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
           y,
           top: offsetY,
           left: offsetX,
-          // Water-like appearance with gradient (using button colors when available)
+          // Water-like appearance with gradient (using hover colors when hovering)
           background: `
             radial-gradient(circle at 40% 40%,
               ${buttonColors.highlight} 0%,
@@ -407,7 +465,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
               ${buttonColors.secondary} 90%)
           `,
           boxShadow: `
-            0 0 20px ${glowColor},
+            0 0 20px ${buttonColors.glow},
             inset 0 0 8px rgba(255,255,255,0.6)
           `,
           // Glass effect
@@ -488,7 +546,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
   );
 };
 
-// Default export with optimal water settings
+// Default export with optimal water settings and lime hover color
 export default function FluidAdaptiveCursor() {
   return (
     <FluidCursor
@@ -497,11 +555,15 @@ export default function FluidAdaptiveCursor() {
       primaryColor="rgba(56,189,248,0.5)"
       secondaryColor="rgba(59,130,246,0.4)"
       glowColor="rgba(56,189,248,0.4)"
+      // Add lime/green colors for hover state
+      hoverColor="rgba(32,204,22,0.6)"
+      hoverSecondaryColor="rgba(81,233,13,0.4)"
+      hoverGlowColor="rgba(62,204,22,0.5)"
       fluidIntensity={0.08}
       rippleSpeed={1.5}
       waterOpacity={0.9}
       buttonMorphing={true}
-      adaptButtonColor={true}
+      adaptButtonColor={false} // Set to false to use the lime color on hover instead of element color
       maxMorphWidth={300}
       maxMorphHeight={150}
       cornerRadius={12}
