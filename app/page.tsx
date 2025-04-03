@@ -3,6 +3,7 @@ import Image from "next/image";
 import Hero from "@/components/Hero";
 import Grid from "@/components/Grids";
 import RecentProjects from "@/components/Projects";
+import Clients from "@/components/Clients";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
         <Hero />
         <Grid />
         <RecentProjects />
+        <Clients />
       </div>
     </main>
   );
