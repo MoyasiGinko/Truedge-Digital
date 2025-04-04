@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./utils/ThemeProvider";
+// import { ThemeProvider } from "./utils/ThemeProvider";
 import { CursorProvider } from "./utils/CursorProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -22,19 +22,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
+        {/* <ThemeProvider
           enableSystem={false}
           attribute="class"
           defaultTheme="light"
-        >
-          <CursorProvider>
-            {/* Add the bubble cursor */}
-            <FluidAdaptiveCursor />
-            <Header />
-            {children}
-            <Footer />
-          </CursorProvider>
-        </ThemeProvider>
+        > */}
+        <CursorProvider>
+          {/* Add the bubble cursor */}
+          <FluidAdaptiveCursor />
+          <Header />
+          {children}
+          <Footer />
+        </CursorProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );
