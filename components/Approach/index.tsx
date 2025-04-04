@@ -23,7 +23,7 @@ const Approach = () => {
           <CanvasRevealEffect
             animationSpeed={5.1}
             // add these classed for the border rounded overflowing -> rounded-3xl overflow-hidden
-            containerClassName="bg-emerald-900 rounded-3xl overflow-hidden"
+            containerClassName="bg-emerald-900  overflow-hidden"
           />
         </Card>
         <Card
@@ -36,7 +36,7 @@ const Approach = () => {
           <CanvasRevealEffect
             animationSpeed={3}
             // change bg-black to bg-pink-900
-            containerClassName="bg-pink-900 rounded-3xl overflow-hidden"
+            containerClassName="bg-pink-900  overflow-hidden"
             colors={[
               // change the colors of the
               [255, 166, 158],
@@ -57,7 +57,7 @@ const Approach = () => {
         >
           <CanvasRevealEffect
             animationSpeed={3}
-            containerClassName="bg-sky-600 rounded-3xl overflow-hidden"
+            containerClassName="bg-sky-600  overflow-hidden"
             colors={[[125, 211, 252]]}
           />
         </Card>
@@ -97,10 +97,10 @@ const Card = ({
       }}
     >
       {/* change to h-10 w-10 , add opacity-30  */}
-      <Icon className="absolute h-10 w-10 -top-3 -left-3 dark:text-white text-black opacity-30" />
-      <Icon className="absolute h-10 w-10 -bottom-3 -left-3 dark:text-white text-black opacity-30" />
-      <Icon className="absolute h-10 w-10 -top-3 -right-3 dark:text-white text-black opacity-30" />
-      <Icon className="absolute h-10 w-10 -bottom-3 -right-3 dark:text-white text-black opacity-30" />
+      <Icon className="absolute h-10 w-10 -top-3 -left-3 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -bottom-3 -left-3 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -top-3 -right-3 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -bottom-3 -right-3 dark:text-white text-white opacity-30" />
 
       <AnimatePresence>
         {hovered && (
@@ -126,7 +126,7 @@ const Card = ({
         <h2
           // change text-3xl, add text-center
           className="dark:text-white text-center text-3xl opacity-0 group-hover/canvas-card:opacity-100
-         relative z-10 text-black mt-4  font-bold group-hover/canvas-card:text-white
+         relative z-10 text-white mt-4  font-bold group-hover/canvas-card:text-white
          group-hover/canvas-card:-translate-y-2 transition duration-200"
         >
           {title}
@@ -172,7 +172,7 @@ const AceternityIcon = ({ order }: { order: string }) => {
     //   viewBox="0 0 66 65"
     //   fill="none"
     //   xmlns="http://www.w3.org/2000/svg"
-    //   className="h-10 w-10 text-black dark:text-white group-hover/canvas-card:text-white "
+    //   className="h-10 w-10 text-white dark:text-white group-hover/canvas-card:text-white "
     // >
     //   <path
     //     d="M8 8.05571C8 8.05571 54.9009 18.1782 57.8687 30.062C60.8365 41.9458 9.05432 57.4696 9.05432 57.4696"
