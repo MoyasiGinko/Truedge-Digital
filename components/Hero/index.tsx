@@ -7,7 +7,7 @@ import { TextGenerateEffect } from "@/components/ui/TextGenerateEffect";
 
 const Hero = () => {
   return (
-    <div className="pb-20 pt-36">
+    <div className="pb-20 pt-10 sm:pt-12 lg:pt-20">
       {/* Spotlights for background effects */}
       <div>
         <Spotlight
@@ -41,11 +41,19 @@ const Hero = () => {
           transition={{ duration: 0.8 }}
           className="max-w-[89vw] md:max-w-2xl lg:max-w-[60vw] flex flex-col items-center justify-center"
         >
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-2"
+          >
+            <img src="/logo.svg" alt="Logo" className="w-44 h-22" />
+          </motion.div>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="uppercase tracking-widest text-xs text-center text-blue-100 max-w-80 mb-4"
+            className="uppercase tracking-widest text-xs text-center text-blue-100 max-w-80 mb-2"
           >
             Crafting Excellence with Modern Tech
           </motion.p>
