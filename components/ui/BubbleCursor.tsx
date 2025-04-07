@@ -445,7 +445,7 @@ const FluidCursor: React.FC<FluidCursorProps> = ({
     <>
       {/* Main fluid cursor */}
       <motion.div
-        className="special-fluid-cursor hidden sm:block"
+        className="special-fluid-cursor hidden lg:block"
         style={{
           position: "fixed",
           pointerEvents: "none",
