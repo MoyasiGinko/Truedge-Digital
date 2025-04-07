@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import MagicButton from "@/components/ui/MagicButton";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { TextGenerateEffect } from "@/components/ui/TextGenerateEffect";
+import HeroGlobe from "@/components/Hero/HeroClientGlobe";
 
 const Hero = () => {
   return (
-    <div className="pb-20 pt-10 sm:pt-12 lg:pt-20">
+    <div className="relative w-full min-h-screen pt-30 overflow-hidden">
       {/* Spotlights for background effects */}
-      <div>
+      <div className="absolute inset-0 pointer-events-none">
         <Spotlight
           className="-top-40 -left-10 md:-left-32 md:-top-20 h-screen"
           fill="white"
@@ -22,24 +23,25 @@ const Hero = () => {
       </div>
 
       {/* Background grid */}
-      <div
-        className="h-screen w-full dark:bg-slate-950 bg-black dark:bg-grid-white/[0.03] bg-grid-black-100/[0.2]
-       absolute top-0 left-0 flex items-center justify-center"
-      >
+      <div className="absolute inset-0 bg-transparent dark:bg-grid-white/[0.03] bg-grid-black-100/[0.2]">
         {/* Radial gradient mask */}
-        <div
-          className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black-100
-         bg-blue-950 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"
-        />
+        <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-transparent [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      </div>
+
+      {/* Globe */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+        <div className="w-full h-full max-w-4xl max-h-4xl">
+          <HeroGlobe />
+        </div>
       </div>
 
       {/* Hero content */}
-      <div className="flex justify-center relative my-20 z-10">
+      <div className="relative z-20 flex justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-[89vw] md:max-w-2xl lg:max-w-[60vw] flex flex-col items-center justify-center"
+          className="max-w-[89vw] md:max-w-2xl lg:max-w-[60vw]  flex flex-col items-center justify-center"
         >
           <motion.div
             initial={{ opacity: 0, y: -10 }}
