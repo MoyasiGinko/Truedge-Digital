@@ -340,7 +340,7 @@ const AnimatedGrid = () => {
       // Fade in
       setTimeout(() => {
         setCodeSnippet((current) =>
-          current ? { ...current, opacity: 0.95 } : null
+          current ? { ...current, opacity: 0.3 } : null
         );
 
         // Start typing after fade-in
@@ -400,7 +400,7 @@ const AnimatedGrid = () => {
     },
     animate: (custom: LineVariantCustom) => ({
       pathLength: [0, 1, 1],
-      opacity: [0.3, 0.8, 0.3],
+      opacity: [0.1, 0.3, 0.1],
       stroke: [custom.gradient[0], custom.gradient[1], "#333333"],
       transition: {
         pathLength: {
