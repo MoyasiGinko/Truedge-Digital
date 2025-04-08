@@ -57,7 +57,7 @@ const Hero = () => {
             {/* Enhanced TextGenerateEffect with word-by-word hover effects */}
             <TextGenerateEffect
               words="Transforming Concepts into Seamless User Experiences"
-              className="text-[20px] md:text-2xl lg:text-3xl font-extrabold"
+              className="text-[20px] md:text-3xl lg:text-4xl font-extrabold"
               hoverEffects={true}
             />
 
