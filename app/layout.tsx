@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// import { ThemeProvider } from "./utils/ThemeProvider";
 import { CursorProvider } from "./utils/CursorProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FluidAdaptiveCursor from "@/components/ui/BubbleCursor";
+import PageGridBackground from "@/components/ui/AnimatedGridBackground";
+import AnimatedGrid from "@/components/ui/AnimatedGrid";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,13 +29,16 @@ export default function RootLayout({
           defaultTheme="light"
         > */}
         <CursorProvider>
+          {/* Add the animated grid background */}
+          {/* <PageGridBackground opacity={0.2} /> */}
+          <AnimatedGrid />
+
           {/* Add the bubble cursor */}
           <FluidAdaptiveCursor />
           <Header />
-          {children}
+          <div className="relative z-1">{children}</div>
           <Footer />
         </CursorProvider>
-        {/* </ThemeProvider> */}
       </body>
     </html>
   );
