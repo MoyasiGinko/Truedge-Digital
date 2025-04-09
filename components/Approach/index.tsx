@@ -1,24 +1,26 @@
 "use client";
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-
+import Heading from "@/components/ui/Heading";
 import { CanvasRevealEffect } from "@/components/ui/CanvasRevealEffect";
 
 const Approach = () => {
   return (
     <section className="w-full py-20">
-      <h1 className="heading">
-        Our <span className="text-purple">approach</span>
-      </h1>
+      <Heading
+        text="Our approach to"
+        highlightedText="solutions"
+        className=""
+      />
       {/* remove bg-white dark:bg-black */}
       <div className="my-20 flex flex-col lg:flex-row items-center justify-center w-full gap-4">
         {/* add des prop */}
         <Card
           title="Web Design & Planning"
           icon={<AceternityIcon order="Phase 1" />}
-          des="After a quick chat, I dive into research and sketching. I create a
-          wireframe and a mood board to set the vibe. I also share a project
-          plan with you, so we’re on the same page."
+          des="After a quick chat, we dive into research and sketching. We create a
+          wireframe and a mood board to set the vibe. We also share a project
+          plan with you, so we're on the same page."
         >
           <CanvasRevealEffect
             animationSpeed={5.1}
@@ -29,8 +31,8 @@ const Approach = () => {
         <Card
           title="Development & Updates"
           icon={<AceternityIcon order="Phase 2" />}
-          des="Once the design is approved, I start coding. I keep you in the loop
-          with regular updates and feedback sessions. I also make sure the
+          des="Once the design is approved, we start coding. We keep you in the loop
+          with regular updates and feedback sessions. We also make sure the
           website is responsive and works well on all devices."
         >
           <CanvasRevealEffect
@@ -51,8 +53,8 @@ const Approach = () => {
         <Card
           title="SEO & Launch"
           icon={<AceternityIcon order="Phase 3" />}
-          des="After the website is ready, I optimize it for search engines. I also
-          set up analytics to track performance. Once everything is perfect, I
+          des="After the website is ready, we optimize it for search engines. We also
+          set up analytics to track performance. Once everything is perfect, we
           launch the website and make it live for everyone to see."
         >
           <CanvasRevealEffect

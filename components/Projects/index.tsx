@@ -4,15 +4,17 @@ import { FaLocationArrow } from "react-icons/fa6";
 
 import { projects } from "@/data";
 import { PinContainer } from "./Pin";
+import Heading from "../ui/Heading";
 
 const RecentProjects = () => {
   return (
     <div className="py-20">
       <a href="#projects" id="projects" />
-      <h1 className="heading">
-        A small selection of{" "}
-        <span className="text-purple">recent projects</span>
-      </h1>
+      <Heading
+        text="A small selection of"
+        highlightedText="recent projects"
+        className=""
+      />
       <div className="flex flex-wrap items-center justify-center p-4 gap-16 mt-10">
         {projects.map((item) => (
           <div
