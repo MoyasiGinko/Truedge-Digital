@@ -35,7 +35,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-[89vw] md:max-w-xl"
+            className="max-w-[89vw] md:max-w-3xl"
           >
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -57,7 +57,7 @@ const Hero = () => {
             {/* Enhanced TextGenerateEffect with word-by-word hover effects */}
             <TextGenerateEffect
               words="Transforming Concepts into Seamless User Experiences"
-              className="text-[20px] md:text-3xl lg:text-4xl font-extrabold"
+              className="text-[30px] md:text-4xl lg:text-5xl font-extrabold"
               hoverEffects={true}
             />
 
