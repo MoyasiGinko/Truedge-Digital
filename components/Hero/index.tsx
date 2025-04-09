@@ -23,7 +23,7 @@ const Hero = () => {
       </div>
 
       {/* Background grid */}
-      <div className="absolute inset-0 bg-transparent dark:bg-grid-white/[0.03] bg-grid-black-100/[0.2]">
+      <div className="absolute inset-0 bg-transparent bg-grid-white/[0.03] ">
         {/* Radial gradient mask */}
         <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-transparent [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
       </div>

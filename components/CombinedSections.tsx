@@ -14,11 +14,11 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, MotionPathPlugin); // Register MotionPathPlugin
 }
 
-// Rocket SVG Component
+// Rocket SVG Component - Increased size from 80px to 120px
 const Rocket = () => (
   <div
     className="rocket absolute z-40"
-    style={{ width: "80px", height: "80px" }}
+    style={{ width: "120px", height: "120px" }}
   >
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Rocket body */}
@@ -236,7 +236,7 @@ const CombinedSections = () => {
         "path"
       );
 
-      // Create a smoother zigzag path with more control points
+      // Create a smoother path with more control points and fix the 3rd curve turn gap
       path.setAttribute(
         "d",
         `M20,20
@@ -252,10 +252,10 @@ const CombinedSections = () => {
         },${containerHeight / 1.7}
          C${containerWidth - 200},${containerHeight / 1.6} ${
           containerWidth - 100
-        },${containerHeight / 1.5} ${containerWidth - 150},${
-          containerHeight / 1.4
+        },${containerHeight / 1.5} ${containerWidth - 120},${
+          containerHeight / 1.3
         }
-         C${containerWidth - 200},${containerHeight / 1.3} 150,${
+         C${containerWidth - 140},${containerHeight / 1.25} 150,${
           containerHeight / 1.2
         } 100,${containerHeight - 150}
          C60,${containerHeight - 120} 80,${containerHeight - 80} ${
@@ -276,13 +276,13 @@ const CombinedSections = () => {
 
       pathRef.current = path; // Save reference to the path
 
-      // SIMPLE SOLUTION: Just control the position with scrub, no opacity changes
+      // Updated smoother animation with slower scrubbing and higher resolution
       gsap.to(rocketRef.current, {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top bottom",
           end: "bottom top",
-          scrub: 0.1,
+          scrub: 1.5, // Increased from 0.1 to 1.5 for smoother animation
           onUpdate: (self) => {
             if (self.progress === 0 || self.progress === 1) {
               gsap.to(rocketRef.current, { opacity: 1, duration: 0.5 });
@@ -294,17 +294,19 @@ const CombinedSections = () => {
           align: pathRef.current,
           alignOrigin: [0.5, 0.5],
           autoRotate: 90,
-          resolution: 300,
+          resolution: 500, // Increased from 300 to 500 for higher resolution path following
           type: "cubic",
         },
-        ease: "power1.inOut",
+        ease: "none", // Changed from power1.inOut to none for consistent speed
         immediateRender: true,
       });
+
       gsap.set(rocketRef.current, {
         x: 20,
         y: 20,
       });
-      // Add subtle hover animation
+
+      // Add subtle hover animation with smoother timing
       const floatingAnimation = gsap.timeline({
         repeat: -1,
         yoyo: true,
@@ -312,17 +314,17 @@ const CombinedSections = () => {
       });
 
       floatingAnimation.to(rocketRef.current, {
-        y: "+=3",
-        x: "+=2",
+        y: "+=4",
+        x: "+=3",
         rotation: "+=1",
-        duration: 1.2,
+        duration: 2, // Increased from 1.2 to 2
       });
 
       floatingAnimation.to(rocketRef.current, {
-        y: "-=3",
-        x: "-=2",
+        y: "-=4",
+        x: "-=3",
         rotation: "-=1",
-        duration: 1.5,
+        duration: 2.5, // Increased from 1.5 to 2.5
       });
 
       floatingAnimation.pause(); // Pause floating animation when motionPath is active
@@ -358,7 +360,7 @@ const CombinedSections = () => {
     >
       <GraffitiBackground />
 
-      {/* Rocket - SIMPLIFIED, no opacity animations */}
+      {/* Rocket */}
       <div ref={rocketRef}>
         <Rocket />
       </div>
