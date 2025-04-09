@@ -88,8 +88,7 @@ export const TextGenerateEffect = ({
       <motion.div ref={scope} className="inline">
         {wordsArray.map((word, idx) => {
           // Determine text color - purple for words after index 3
-          const baseClass =
-            idx > 3 ? "text-purple" : "dark:text-gray-100 text-white ";
+          const baseClass = idx > 3 ? "text-purple" : "text-gray-100 ";
 
           // Get the appropriate effect for this word (cycling through the effects array)
           const effectType = wordEffects[idx % wordEffects.length];
@@ -121,7 +120,7 @@ export const TextGenerateEffect = ({
   return (
     <div className={cn("font-bold", className)}>
       <div className="my-4">
-        <div className="dark:text-white text-white  leading-snug tracking-wide relative">
+        <div className="text-white   leading-snug tracking-wide relative">
           {renderWords()}
 
           {/* Subtle background animation */}

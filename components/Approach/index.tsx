@@ -86,8 +86,8 @@ const Card = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       // change h-[30rem] to h-[35rem], add rounded-3xl
-      className="border border-black/[0.2] group/canvas-card flex items-center justify-center
-       dark:border-white/[0.2]  max-w-sm w-full mx-auto p-4 relative lg:h-[35rem]  "
+      className="border  group/canvas-card flex items-center justify-center
+       border-white/[0.2]  max-w-sm w-full mx-auto p-4 relative lg:h-[35rem]  "
       style={{
         //   add these two
         //   you can generate the color from here https://cssgradient.io/
@@ -97,10 +97,10 @@ const Card = ({
       }}
     >
       {/* change to h-10 w-10 , add opacity-30  */}
-      <Icon className="absolute h-10 w-10 -top-5 -left-5 dark:text-white text-white opacity-30" />
-      <Icon className="absolute h-10 w-10 -bottom-5 -left-5 dark:text-white text-white opacity-30" />
-      <Icon className="absolute h-10 w-10 -top-5 -right-5 dark:text-white text-white opacity-30" />
-      <Icon className="absolute h-10 w-10 -bottom-5 -right-5 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -top-5 -left-5  text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -bottom-5 -left-5  text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -top-5 -right-5  text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -bottom-5 -right-5  text-white opacity-30" />
 
       <AnimatePresence>
         {hovered && (
@@ -125,8 +125,8 @@ const Card = ({
         </div>
         <h2
           // change text-3xl, add text-center
-          className="dark:text-white text-center text-3xl opacity-0 group-hover/canvas-card:opacity-100
-         relative z-10 text-white mt-4  font-bold group-hover/canvas-card:text-white
+          className="text-white text-center text-3xl opacity-0 group-hover/canvas-card:opacity-100
+         relative z-10  mt-4  font-bold group-hover/canvas-card:text-white
          group-hover/canvas-card:-translate-y-2 transition duration-200"
         >
           {title}
