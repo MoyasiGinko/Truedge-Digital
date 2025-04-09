@@ -237,35 +237,32 @@ const CombinedSections = () => {
       );
 
       // Create a smoother path with more control points and fix the 3rd curve turn gap
+      // Create a smoother path with more control points and fix the 3rd curve turn gap
       path.setAttribute(
         "d",
         `M20,20
-         C70,40 140,30 ${containerWidth - 100},40
-         C${containerWidth - 50},80 ${containerWidth - 80},120 ${
+   C70,40 140,30 ${containerWidth - 100},40
+   C${containerWidth - 50},80 ${containerWidth - 80},120 ${
           containerWidth - 120
         },180
-         C${containerWidth - 180},240 100,${containerHeight / 3} 50,${
-          containerHeight / 2.5
+   C${containerWidth - 160},220 120,${containerHeight / 3.3} 70,${
+          containerHeight / 3.2
         }
-         C30,${containerHeight / 2} 60,${containerHeight / 1.8} ${
+   C30,${containerHeight / 2.5} 60,${containerHeight / 2.2} ${
           containerWidth / 2
-        },${containerHeight / 1.7}
-         C${containerWidth - 200},${containerHeight / 1.6} ${
-          containerWidth - 100
-        },${containerHeight / 1.5} ${containerWidth - 120},${
-          containerHeight / 1.3
-        }
-         C${containerWidth - 140},${containerHeight / 1.25} 150,${
-          containerHeight / 1.2
-        } 100,${containerHeight - 150}
-         C60,${containerHeight - 120} 80,${containerHeight - 80} ${
+        },${containerHeight / 2}
+   C${containerWidth - 200},${containerHeight / 1.9} ${containerWidth - 100},${
+          containerHeight / 1.8
+        } ${containerWidth - 120},${containerHeight / 1.6}
+   C${containerWidth - 140},${containerHeight / 1.5} 150,${
+          containerHeight / 1.4
+        } 100,${containerHeight - 200}
+   C60,${containerHeight - 150} 80,${containerHeight - 100} ${
           containerWidth / 2
-        },${containerHeight - 60}
-         C${containerWidth - 200},${containerHeight - 50} ${
-          containerWidth - 100
-        },${containerHeight - 40} ${containerWidth - 50},${
-          containerHeight - 30
-        }`
+        },${containerHeight - 80}
+   C${containerWidth - 200},${containerHeight - 60} ${containerWidth - 100},${
+          containerHeight - 40
+        } ${containerWidth - 50},${containerHeight - 30}`
       );
 
       path.setAttribute("stroke", "#FF0000");
