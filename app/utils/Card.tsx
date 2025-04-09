@@ -20,8 +20,8 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={`
-        bg-white dark:bg-gray-800
-        border border-gray-200 dark:border-gray-700
+        bg-gray-800
+        border border-gray-700
         rounded-lg shadow-sm
         overflow-hidden
         transition-all duration-200
