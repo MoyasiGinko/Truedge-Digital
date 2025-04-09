@@ -87,7 +87,7 @@ const Card = ({
       onMouseLeave={() => setHovered(false)}
       // change h-[30rem] to h-[35rem], add rounded-3xl
       className="border border-black/[0.2] group/canvas-card flex items-center justify-center
-       dark:border-white/[0.2]  max-w-sm w-full mx-auto p-4 relative lg:h-[35rem] rounded-3xl "
+       dark:border-white/[0.2]  max-w-sm w-full mx-auto p-4 relative lg:h-[35rem]  "
       style={{
         //   add these two
         //   you can generate the color from here https://cssgradient.io/
@@ -97,10 +97,10 @@ const Card = ({
       }}
     >
       {/* change to h-10 w-10 , add opacity-30  */}
-      <Icon className="absolute h-10 w-10 -top-3 -left-3 dark:text-white text-white opacity-30" />
-      <Icon className="absolute h-10 w-10 -bottom-3 -left-3 dark:text-white text-white opacity-30" />
-      <Icon className="absolute h-10 w-10 -top-3 -right-3 dark:text-white text-white opacity-30" />
-      <Icon className="absolute h-10 w-10 -bottom-3 -right-3 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -top-5 -left-5 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -bottom-5 -left-5 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -top-5 -right-5 dark:text-white text-white opacity-30" />
+      <Icon className="absolute h-10 w-10 -bottom-5 -right-5 dark:text-white text-white opacity-30" />
 
       <AnimatePresence>
         {hovered && (
