@@ -5,6 +5,7 @@ import Clients from "@/components/Clients";
 // import Experience from "@/components/Experience";
 // import Approach from "@/components/Approach";
 import CombinedSections from "@/components/CombinedSections";
+import ContactSection from "@/components/Contact";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
         </div>
       </main>
       <CombinedSections />
+      <ContactSection />
     </>
   );
 }
