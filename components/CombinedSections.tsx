@@ -411,7 +411,7 @@ const CombinedSections = () => {
       </div>
 
       {/* Navigation dots */}
-      <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4">
+      {/* <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4">
         {["Experience", "Approach"].map((section, i) => (
           <button
             key={i}
@@ -420,7 +420,7 @@ const CombinedSections = () => {
             aria-label={`Navigate to ${section} section`}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
