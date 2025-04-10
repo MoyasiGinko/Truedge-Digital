@@ -286,7 +286,7 @@ const ServiceSection = () => {
       </div>
 
       {/* Fixed navigation dots */}
-      {NavigationDots}
+      {/* {NavigationDots} */}
 
       {/* Service cards */}
       <div>

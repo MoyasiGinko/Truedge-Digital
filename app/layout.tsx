@@ -31,7 +31,7 @@ export default function RootLayout({
         <CursorProvider>
           {/* Add the animated grid background */}
           {/* <PageGridBackground opacity={0.2} /> */}
-          <AnimatedGrid />
+          {/* <AnimatedGrid /> */}
 
           {/* Add the bubble cursor */}
           <FluidAdaptiveCursor />
