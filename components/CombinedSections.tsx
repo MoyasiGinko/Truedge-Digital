@@ -259,9 +259,9 @@ const CombinedSections = () => {
         } 100,${containerHeight - 200}
    C60,${containerHeight - 150} 80,${containerHeight - 100} ${
           containerWidth / 2
-        },${containerHeight - 80}
-   C${containerWidth - 200},${containerHeight - 60} ${containerWidth - 100},${
-          containerHeight - 40
+        },${containerHeight - 100}
+   C${containerWidth - 150},${containerHeight - 140} ${containerWidth - 100},${
+          containerHeight - 140
         } ${containerWidth - 50},${containerHeight - 30}`
       );
 
@@ -411,7 +411,7 @@ const CombinedSections = () => {
       </div>
 
       {/* Navigation dots */}
-      <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4">
+      {/* <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4">
         {["Experience", "Approach"].map((section, i) => (
           <button
             key={i}
@@ -420,7 +420,7 @@ const CombinedSections = () => {
             aria-label={`Navigate to ${section} section`}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
