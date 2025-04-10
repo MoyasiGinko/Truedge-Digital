@@ -259,9 +259,9 @@ const CombinedSections = () => {
         } 100,${containerHeight - 200}
    C60,${containerHeight - 150} 80,${containerHeight - 100} ${
           containerWidth / 2
-        },${containerHeight - 80}
-   C${containerWidth - 200},${containerHeight - 60} ${containerWidth - 100},${
-          containerHeight - 40
+        },${containerHeight - 100}
+   C${containerWidth - 150},${containerHeight - 140} ${containerWidth - 100},${
+          containerHeight - 140
         } ${containerWidth - 50},${containerHeight - 30}`
       );
 
