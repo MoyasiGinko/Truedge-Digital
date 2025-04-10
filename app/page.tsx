@@ -6,6 +6,7 @@ import Clients from "@/components/Clients";
 // import Approach from "@/components/Approach";
 import CombinedSections from "@/components/CombinedSections";
 import ContactSection from "@/components/Contact";
+import ServiceSectionWithContext from "@/components/Services";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <main className="relative flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 px-5">
         <div className="max-w-7xl w-full">
           <Grid />
+          <ServiceSectionWithContext />
           <RecentProjects />
           <Clients />
         </div>
