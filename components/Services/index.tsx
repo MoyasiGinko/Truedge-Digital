@@ -1,277 +1,277 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
+import { motion } from "framer-motion";
 import services from "./services";
-import { useScrollContext, ScrollProvider } from "./scrollContext";
-
-import { useScrollAnimation, useStaggerAnimation } from "./useScrollAnimation";
 import Heading from "../ui/Heading";
 import MagicButton from "../ui/MagicButton";
 
-// Register GSAP plugins
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
+// Define interface for service object
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  gifUrl: string;
+  points: string[];
 }
 
-// Service info card component
-const ServiceInfoCard: React.FC<{
-  service: (typeof services)[0];
-  index: number;
-  visible: boolean;
-}> = ({ service, index, visible }) => {
-  const { registerSection } = useScrollContext();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const listRef = useStaggerAnimation<HTMLUListElement>({
-    childSelector: "li",
-    staggerAmount: 0.1,
-    fromVars: { opacity: 0, x: -20 },
-    toVars: { opacity: 1, x: 0, ease: "back.out(1.2)" },
-    duration: 0.4,
+// Pre-load all images to prevent layout shifts
+const preloadImages = () => {
+  services.forEach((service) => {
+    const img = new Image();
+    img.src = service.gifUrl;
   });
+};
 
-  // Register this section with the context
+// Optimized Service info card component that always renders but only animates when active
+const ServiceInfoCard = ({
+  service,
+  index,
+  activeIndex,
+  registerIntersection,
+}: {
+  service: Service;
+  index: number;
+  activeIndex: number;
+  registerIntersection: (element: HTMLDivElement, index: number) => void;
+}) => {
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const isActive = activeIndex === index;
+
+  // Register this element with the intersection handler
   useEffect(() => {
     if (cardRef.current) {
-      registerSection(index, cardRef.current);
+      registerIntersection(cardRef.current, index);
     }
-  }, [index, registerSection]);
-
-  // Card animation variants
-  const cardVariants = {
-    hidden: {
-      opacity: 0,
-      y: 100,
-      scale: 0.9,
-      rotateX: 5,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      rotateX: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-        mass: 1,
-        delayChildren: 0.3,
-        staggerChildren: 0.1,
-      },
-    },
-    exit: {
-      opacity: 0,
-      y: -100,
-      scale: 0.9,
-      transition: {
-        duration: 0.5,
-        ease: "easeInOut",
-      },
-    },
-  };
-
-  // Point item variants
-  const pointVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-  };
-
-  // Use GSAP for more complex animations
-  useEffect(() => {
-    if (!cardRef.current || !visible) return;
-
-    const gifContainer = cardRef.current.querySelector(".gif-container");
-    const title = cardRef.current.querySelector(".title");
-    const description = cardRef.current.querySelector(".description");
-
-    const tl = gsap.timeline();
-
-    // Reset animations
-    tl.set([gifContainer, title, description], { clearProps: "all" });
-
-    // Animate gif container
-    tl.fromTo(
-      gifContainer,
-      {
-        scale: 0.8,
-        opacity: 0,
-        rotationY: -15,
-        // boxShadow: "0 0 0 rgba(79, 70, 229, 0)",
-      },
-      {
-        scale: 1,
-        opacity: 1,
-        rotationY: 0,
-        // boxShadow: "0 0 30px rgba(79, 70, 229, 0.3)",
-        duration: 0.8,
-        ease: "power3.out",
-      }
-    );
-
-    // Add floating animation for GIF container
-    gsap.to(gifContainer, {
-      y: "10px",
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-
-    return () => {
-      // Cleanup animations
-      gsap.killTweensOf(gifContainer);
-    };
-  }, [visible]);
+  }, [index, registerIntersection]);
 
   // Alternate layout for even/odd index
   const isEven = index % 2 === 0;
 
-  // Parallax effect for background elements
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ["start end", "end start"],
-  });
+  // Memoize expensive calculations
+  const isVisible = useMemo(() => {
+    // Pre-render the current active card and cards immediately adjacent to it
+    return Math.abs(activeIndex - index) <= 1;
+  }, [activeIndex, index]);
 
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const bgOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 1, 0.3]);
-
+  // We don't need AnimatePresence since we're handling visibility differently
   return (
     <div
       ref={cardRef}
       className="min-h-[80vh] flex items-center justify-center py-24 relative"
+      id={`service-${service.id}`}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? "auto" : "none",
+        willChange: isVisible ? "transform, opacity" : "auto",
+      }}
     >
-      <AnimatePresence mode="wait">
-        {visible && (
-          <motion.div
-            key={`service-${service.id}`}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className={`flex flex-col ${
-              isEven ? "md:flex-row" : "md:flex-row-reverse"
-            } items-center gap-10 bg-gradient-to-br from-slate-950/80 to-slate-900/80 backdrop-blur-lg rounded-2xl p-8 md:p-12 w-full max-w-6xl mx-auto shadow-2xl border border-gray-700/30 relative overflow-hidden z-10`}
-          >
-            {/* Background decorative elements */}
-            <motion.div
-              className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0"
-              style={{ opacity: bgOpacity, y: bgY }}
-            >
-              <div
-                className={`absolute ${
-                  isEven ? "top-0 left-0" : "bottom-0 right-0"
-                } w-64 h-64 rounded-full bg-indigo-600/10 blur-3xl`}
-              ></div>
-              <div
-                className={`absolute ${
-                  isEven ? "bottom-0 right-0" : "top-0 left-0"
-                } w-48 h-48 rounded-full bg-purple-600/10 blur-3xl`}
-              ></div>
-            </motion.div>
+      <motion.div
+        key={`service-${service.id}`}
+        initial={false}
+        animate={{
+          opacity: isActive ? 1 : 0.3,
+          y: isActive ? 0 : 50,
+          scale: isActive ? 1 : 0.95,
+        }}
+        transition={{
+          type: "tween", // Using tween instead of spring for better performance
+          duration: 0.3,
+          ease: "easeOut",
+        }}
+        className={`flex flex-col ${
+          isEven ? "md:flex-row" : "md:flex-row-reverse"
+        } items-center gap-10 bg-gradient-to-br from-slate-950/80 to-slate-900/80 backdrop-blur-lg rounded-2xl p-8 md:p-12 w-full max-w-6xl mx-auto shadow-xl border border-gray-700/30 relative overflow-hidden z-10`}
+        style={{ willChange: "transform, opacity" }}
+      >
+        {/* Simplified background decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <div
+            className={`absolute ${
+              isEven ? "top-0 left-0" : "bottom-0 right-0"
+            } w-64 h-64 rounded-full bg-indigo-600/10 blur-3xl`}
+          ></div>
+          <div
+            className={`absolute ${
+              isEven ? "bottom-0 right-0" : "top-0 left-0"
+            } w-48 h-48 rounded-full bg-purple-600/10 blur-3xl`}
+          ></div>
+        </div>
 
-            {/* GIF Container */}
-            <div className="gif-container relative z-10 w-full md:w-2/5 overflow-hidden rounded-xl p-1">
-              <img
-                src={service.gifUrl}
-                alt={service.title}
-                className="w-full h-full object-contain"
-              />
-            </div>
+        {/* GIF Container with CSS animations instead of GSAP */}
+        <div className="w-full md:w-2/5 overflow-hidden rounded-xl p-1 gif-container">
+          <img
+            src={service.gifUrl}
+            alt={service.title}
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+        </div>
 
-            {/* Content section */}
-            <div className="w-full md:w-3/5 relative z-10">
-              <motion.h3
-                className="title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-purple-400 mb-4"
-                variants={pointVariants}
+        {/* Content section */}
+        <div className="w-full md:w-3/5 relative z-10">
+          <h3 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-purple-400 mb-4 title">
+            {service.title}
+          </h3>
+
+          <p className="text-gray-300 mb-8 text-lg leading-relaxed description">
+            {service.description}
+          </p>
+
+          <ul className="space-y-3">
+            {service.points.map((point, i) => (
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{
+                  opacity: isActive ? 1 : 0,
+                  x: isActive ? 0 : -20,
+                }}
+                transition={{
+                  duration: 0.3,
+                  delay: isActive ? i * 0.05 : 0, // Reduced delay for better performance
+                  ease: "easeOut",
+                }}
+                className="flex items-start gap-3"
               >
-                {service.title}
-              </motion.h3>
-
-              <motion.p
-                className="description text-gray-300 mb-8 text-lg leading-relaxed"
-                variants={pointVariants}
-              >
-                {service.description}
-              </motion.p>
-
-              <motion.ul ref={listRef} className="space-y-3">
-                {service.points.map((point, i) => (
-                  <motion.li
-                    key={i}
-                    variants={pointVariants}
-                    className="flex items-start gap-3"
+                <span className="text-indigo-400 mt-1 flex-shrink-0">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
                   >
-                    <span className="text-indigo-400 mt-1 flex-shrink-0">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                    <span className="text-gray-200">{point}</span>
-                  </motion.li>
-                ))}
-              </motion.ul>
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span className="text-gray-200">{point}</span>
+              </motion.li>
+            ))}
+          </ul>
 
-              <motion.div variants={pointVariants} className="mt-8">
-                <MagicButton title="Learn More" icon={null} position="left" />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <div className="mt-8">
+            <MagicButton title="Learn More" icon={null} position="left" />
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
 
 // Main ServiceSection component
-const ServiceSection: React.FC = () => {
-  const { currentIndex } = useScrollContext();
-  const sectionRef = useScrollAnimation<HTMLDivElement>({
-    fromVars: { opacity: 0 },
-    toVars: { opacity: 1 },
-    duration: 1,
-  });
+const ServiceSection = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
 
-  // Parallax background effect
-  const { scrollYProgress } = useScroll();
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  // Preload all images when component mounts
+  useEffect(() => {
+    preloadImages();
+  }, []);
+
+  // Setup optimized intersection observer with lower threshold and fewer calculations
+  const registerIntersection = useCallback(
+    (element: HTMLDivElement, index: number) => {
+      if (!intersectionObserverRef.current) {
+        intersectionObserverRef.current = new IntersectionObserver(
+          (entries) => {
+            // Only process if we're not in the middle of a programmatic scroll
+            if (!isScrolling) {
+              entries.forEach((entry) => {
+                // Use a lower threshold to trigger earlier before the section is fully visible
+                if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
+                  const index = parseInt(entry.target.id.split("-")[1]) - 1;
+                  // Debounce the update to prevent rapid changes
+                  requestAnimationFrame(() => {
+                    setActiveIndex(index);
+                  });
+                }
+              });
+            }
+          },
+          {
+            threshold: [0.4], // Lower threshold to detect earlier
+            rootMargin: "-5% 0px", // Smaller margin for better accuracy
+          }
+        );
+      }
+
+      // Observe this element
+      intersectionObserverRef.current.observe(element);
+
+      // No return cleanup function here as it's not used in this callback
+    },
+    [isScrolling]
+  );
+
+  // Optimized scroll handler with debouncing
+  const scrollToSection = useCallback(
+    (index: number): void => {
+      const element = document.getElementById(`service-${services[index].id}`);
+      if (element && !isScrolling) {
+        // Set scrolling flag to prevent intersection observer from firing
+        setIsScrolling(true);
+        // Update active index immediately for visual feedback
+        setActiveIndex(index);
+
+        const targetPosition = element.offsetTop;
+
+        // Use native scrollIntoView with behavior smooth for better performance
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+
+        // Reset scrolling flag after animation completes
+        setTimeout(() => {
+          setIsScrolling(false);
+        }, 800);
+      }
+    },
+    [isScrolling]
+  );
+
+  // Create optimized navigation dot buttons with minimal re-renders
+  const NavigationDots = useMemo(() => {
+    return (
+      <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col space-y-3">
+        {services.map((service, i) => (
+          <button
+            key={i}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              activeIndex === i
+                ? "bg-indigo-500 scale-125"
+                : "bg-gray-600 hover:bg-gray-400"
+            }`}
+            onClick={() => scrollToSection(i)}
+            aria-label={`Go to ${service.title}`}
+          />
+        ))}
+      </div>
+    );
+  }, [activeIndex, scrollToSection]);
 
   return (
     <section
       ref={sectionRef}
       className="relative bg-transparent overflow-hidden"
     >
-      {/* Fixed background elements with parallax effect */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{ y: backgroundY }}
-      >
+      {/* Simplified background element */}
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[url('/path/to/grid-pattern.svg')] opacity-5"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-indigo-600/5 blur-3xl"></div>
         <div className="absolute bottom-1/3 right-1/3 w-96 h-96 rounded-full bg-purple-600/5 blur-3xl"></div>
-      </motion.div>
+      </div>
 
       {/* Section header */}
       <div className="relative z-10 container mx-auto pt-20 px-4">
@@ -285,6 +285,9 @@ const ServiceSection: React.FC = () => {
         </motion.div>
       </div>
 
+      {/* Fixed navigation dots */}
+      {NavigationDots}
+
       {/* Service cards */}
       <div>
         {services.map((service, index) => (
@@ -292,49 +295,74 @@ const ServiceSection: React.FC = () => {
             key={service.id}
             service={service}
             index={index}
-            visible={currentIndex === index}
+            activeIndex={activeIndex}
+            registerIntersection={registerIntersection}
           />
         ))}
       </div>
 
-      {/* CSS for shimmer effect */}
+      {/* CSS for optimizations */}
       <style jsx global>{`
-        .shimmer-effect {
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(
-            to bottom right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.05) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
-          animation: shimmer 2.5s infinite;
-          transform: rotate(30deg);
+        .gif-container {
+          animation: float 3s ease-in-out infinite;
+          will-change: transform;
+          contain: layout;
         }
 
-        @keyframes shimmer {
-          0% {
-            transform: translateY(-100%) translateX(-100%) rotate(30deg);
-          }
+        @keyframes float {
+          0%,
           100% {
-            transform: translateY(100%) translateX(100%) rotate(30deg);
+            transform: translateY(0);
           }
+          50% {
+            transform: translateY(10px);
+          }
+        }
+
+        /* Optimize scrolling */
+        * {
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* Add contain property to improve performance */
+        section > div {
+          contain: content;
+        }
+
+        /* Force hardware acceleration */
+        .force-gpu {
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
         }
       `}</style>
     </section>
   );
 };
 
-// Wrapper component with ScrollContext
-const ServiceSectionWithContext: React.FC = () => {
-  return (
-    <ScrollProvider totalSections={services.length}>
-      <ServiceSection />
-    </ScrollProvider>
-  );
+// Add scroll optimization hook
+const useScrollOptimizer = () => {
+  useEffect(() => {
+    // Passive scroll listener to improve scroll performance
+    const preventDefault = (e: Event) => {
+      e.preventDefault();
+    };
+
+    // Apply scroll optimizations
+    document.addEventListener("touchstart", preventDefault, { passive: true });
+    document.addEventListener("touchmove", preventDefault, { passive: true });
+
+    return () => {
+      document.removeEventListener("touchstart", preventDefault);
+      document.removeEventListener("touchmove", preventDefault);
+    };
+  }, []);
 };
 
-export default ServiceSectionWithContext;
+// Enhanced service section with scroll optimization
+const EnhancedServiceSection = () => {
+  useScrollOptimizer();
+  return <ServiceSection />;
+};
+
+export default EnhancedServiceSection;
