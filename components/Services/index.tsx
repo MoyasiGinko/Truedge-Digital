@@ -86,7 +86,7 @@ const ServiceInfoCard = ({
         }}
         className={`flex flex-col ${
           isEven ? "md:flex-row" : "md:flex-row-reverse"
-        } items-center gap-10 bg-gradient-to-br from-slate-950/80 to-slate-900/80 backdrop-blur-lg rounded-2xl p-8 md:p-12 w-full max-w-6xl mx-auto shadow-xl border border-gray-700/30 relative overflow-hidden z-10`}
+        } items-center gap-10 bg-gradient-to-br from-black/80 to-slate-950/80 backdrop-blur-lg rounded-2xl p-8 md:p-12 w-full max-w-6xl mx-auto shadow-xl border border-gray-700/30 relative overflow-hidden z-10`}
         style={{ willChange: "transform, opacity" }}
       >
         {/* Simplified background decorative elements */}
