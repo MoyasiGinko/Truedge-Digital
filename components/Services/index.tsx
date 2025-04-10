@@ -20,117 +20,6 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// 3D card effect
-const Card3DEffect: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [scale, setScale] = useState(1);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
-
-    // Calculate rotation (limit to small range for subtle effect)
-    const rotateXValue = mouseY * -0.01;
-    const rotateYValue = mouseX * 0.01;
-
-    setRotateX(rotateXValue);
-    setRotateY(rotateYValue);
-    setScale(1.02);
-  };
-
-  const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-    setScale(1);
-  };
-
-  return (
-    <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        transform: `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`,
-        transition: "transform 0.2s ease",
-      }}
-      className="w-full h-full"
-    >
-      {children}
-    </div>
-  );
-};
-
-// Progress bar component
-const ProgressIndicator: React.FC = () => {
-  const { currentIndex } = useScrollContext();
-  const totalServices = services.length;
-
-  return (
-    <div className="fixed z-40 left-0 bottom-8 w-full pointer-events-none">
-      <div className="container mx-auto px-4">
-        <div className="bg-gray-800/60 backdrop-blur-md rounded-full h-2 w-full max-w-xl mx-auto overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-slate-500 to-slate-600"
-            initial={{ width: 0 }}
-            animate={{
-              width: `${((currentIndex + 1) / totalServices) * 100}%`,
-            }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Navigation dots
-const NavigationDots: React.FC = () => {
-  const { currentIndex, scrollToSection } = useScrollContext();
-
-  return (
-    <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-40 space-y-4">
-      {services.map((_, index) => (
-        <button
-          key={index}
-          onClick={() => scrollToSection(index)}
-          className="group flex items-center"
-          aria-label={`Navigate to service ${index + 1}`}
-        >
-          <span className="mr-2 opacity-0 group-hover:opacity-100 text-xs text-white transition-opacity duration-300">
-            0{index + 1}
-          </span>
-          <motion.div
-            className={`w-3 h-3 rounded-full ${
-              currentIndex === index
-                ? "bg-gradient-to-r from-indigo-500 to-purple-600"
-                : "bg-gray-600 hover:bg-gray-500"
-            }`}
-            animate={{
-              scale: currentIndex === index ? 1.5 : 1,
-              boxShadow:
-                currentIndex === index
-                  ? "0 0 10px rgba(79, 70, 229, 0.6)"
-                  : "none",
-            }}
-            transition={{ duration: 0.3 }}
-          />
-        </button>
-      ))}
-    </div>
-  );
-};
-
 // Service info card component
 const ServiceInfoCard: React.FC<{
   service: (typeof services)[0];
@@ -383,10 +272,6 @@ const ServiceSection: React.FC = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-indigo-600/5 blur-3xl"></div>
         <div className="absolute bottom-1/3 right-1/3 w-96 h-96 rounded-full bg-purple-600/5 blur-3xl"></div>
       </motion.div>
-
-      {/* Navigation components */}
-      {/* <NavigationDots /> */}
-      {/* <ProgressIndicator /> */}
 
       {/* Section header */}
       <div className="relative z-10 container mx-auto pt-20 px-4">
