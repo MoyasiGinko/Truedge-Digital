@@ -8,34 +8,18 @@ import HeroGlobe from "@/components/Hero/HeroClientGlobe";
 
 const Hero = () => {
   return (
-    <div className="relative w-full min-h-screen overflow-hidden">
-      {/* Spotlights for background effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <Spotlight
-          className="-top-40 -left-10 md:-left-32 md:-top-20 h-screen"
-          fill="white"
-        />
-        <Spotlight
-          className="h-[80vh] w-[50vw] top-10 left-full"
-          fill="purple"
-        />
-        <Spotlight className="left-80 top-28 h-[80vh] w-[50vw]" fill="blue" />
-      </div>
-
-      {/* Background grid */}
-      <div className="absolute inset-0 bg-transparent bg-grid-white/[0.03] ">
-        {/* Radial gradient mask */}
-        <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-transparent [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
-      </div>
+    <div className="relative w-full px-5 sm:px-10 flex items-center justify-center min-h-screen overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 blur-3xl backdrop-blur-3xl bg-gradient-to-t from-black/5 via-indigo-950 to-purple-950 opacity-50" />
 
       {/* Hero content - Left side */}
-      <div className="relative z-18  flex flex-col justify-center w-full min-h-screen px-6 md:px-12 lg:px-20">
+      <div className="relative z-18  flex flex-col justify-center w-full max-w-7xl min-h-screen mx-auto">
         <div className="w-full z-20 md:w-1/2 mt-20 md:mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-[89vw] md:max-w-3xl"
+            className="max-w-[89vw] sm:max-w-3xl"
           >
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -57,7 +41,7 @@ const Hero = () => {
             {/* Enhanced TextGenerateEffect with word-by-word hover effects */}
             <TextGenerateEffect
               words="Transforming Concepts into Seamless User Experiences"
-              className="text-[30px] md:text-4xl lg:text-5xl font-extrabold"
+              className="text-[30px] md:text-[32px] lg:text-[40px] font-extrabold"
               hoverEffects={true}
             />
 
@@ -87,7 +71,7 @@ const Hero = () => {
         </div>
         {/* Globe - Positioned in background */}
         <div className="absolute z-19 top-0 right-0 w-full md:w-1/2 h-full flex items-center justify-end pointer-events-none">
-          <div className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] mr-0 md:mr-8">
+          <div className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] mr-0 ">
             <HeroGlobe />
           </div>
         </div>

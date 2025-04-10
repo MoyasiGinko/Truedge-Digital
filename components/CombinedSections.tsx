@@ -259,9 +259,9 @@ const CombinedSections = () => {
         } 100,${containerHeight - 200}
    C60,${containerHeight - 150} 80,${containerHeight - 100} ${
           containerWidth / 2
-        },${containerHeight - 80}
-   C${containerWidth - 200},${containerHeight - 60} ${containerWidth - 100},${
-          containerHeight - 40
+        },${containerHeight - 100}
+   C${containerWidth - 150},${containerHeight - 140} ${containerWidth - 100},${
+          containerHeight - 140
         } ${containerWidth - 50},${containerHeight - 30}`
       );
 
@@ -380,28 +380,6 @@ const CombinedSections = () => {
         <section ref={experienceRef} className="relative py-20 overflow-hidden">
           <div className="section-bg absolute inset-0 z-0 opacity-30 bg-[url('/bg-pattern.svg')]"></div>
           <Experience />
-          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
-            <button
-              onClick={() => scrollToSection(approachRef.current)}
-              className="animate-bounce p-2 rounded-full bg-blue-500/20 hover:bg-blue-500/30 transition-colors"
-              aria-label="Scroll to Approach section"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
-            </button>
-          </div>
         </section>
 
         {/* Approach Section */}
@@ -411,7 +389,7 @@ const CombinedSections = () => {
       </div>
 
       {/* Navigation dots */}
-      <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4">
+      {/* <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4">
         {["Experience", "Approach"].map((section, i) => (
           <button
             key={i}
@@ -420,7 +398,7 @@ const CombinedSections = () => {
             aria-label={`Navigate to ${section} section`}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
