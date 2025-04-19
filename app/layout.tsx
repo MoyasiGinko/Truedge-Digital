@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import FluidAdaptiveCursor from "@/components/ui/BubbleCursor";
 import PageGridBackground from "@/components/ui/AnimatedGridBackground";
 import AnimatedGrid from "@/components/ui/AnimatedGrid";
+import CustomCursor from "./utils/CustomCursor";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,17 +29,22 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="light"
         > */}
-        <CursorProvider>
-          {/* Add the animated grid background */}
-          {/* <PageGridBackground opacity={0.2} /> */}
-          {/* <AnimatedGrid /> */}
-
-          {/* Add the bubble cursor */}
-          <FluidAdaptiveCursor />
-          <Header />
-          <div className="relative z-1">{children}</div>
-          <Footer />
-        </CursorProvider>
+        {/* <CursorProvider> */}
+        {/* Add the animated grid background */}
+        {/* <PageGridBackground opacity={0.2} /> */}
+        <AnimatedGrid />
+        <CustomCursor
+          color="#6d28d9" // Purple color
+          size={50} // Larger size
+          buttonFillColor="rgba(109, 40, 217, 0.4)" // Semi-transparent purple
+          enableRipple={true} // Enable the global ripple effect
+        />
+        {/* Add the bubble cursor */}
+        {/* <FluidAdaptiveCursor /> */}
+        <Header />
+        <div className="relative z-1">{children}</div>
+        <Footer />
+        {/* </CursorProvider> */}
       </body>
     </html>
   );

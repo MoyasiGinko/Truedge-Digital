@@ -1,53 +1,37 @@
 "use client";
-
+// components/CustomButton.tsx
 import React from "react";
-import { useCursorInteraction } from "./useCursorInteraction";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline";
-  size?: "sm" | "md" | "lg";
+interface CustomButtonProps {
   children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+  variant?: "primary" | "secondary" | "outline";
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  variant = "primary",
-  size = "md",
+const Button: React.FC<CustomButtonProps> = ({
   children,
-  className,
-  ...props
+  onClick,
+  className = "",
+  variant = "primary",
 }) => {
-  const cursorProps = useCursorInteraction({
-    blendMode: "difference",
-    fillElement: true,
-  });
-
   const baseStyles =
-    "rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "relative px-4 py-2 rounded-md transition-colors duration-300 overflow-hidden font-medium";
 
   const variantStyles = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
-    secondary:
-      "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
-    outline:
-      "bg-transparent border border-gray-300 text-gray-800 hover:bg-gray-100 focus:ring-gray-500",
-  };
-
-  const sizeStyles = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg",
+    primary: "bg-red-600 text-white hover:bg-blue-700",
+    secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
+    outline: "border-2 border-blue-600 text-blue-600 hover:text-white",
   };
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${
-        className || ""
-      }`}
-      {...props}
-      onMouseEnter={cursorProps.onMouseEnter}
-      onMouseLeave={cursorProps.onMouseLeave}
+      onClick={onClick}
+      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
     >
       {children}
     </button>
   );
 };
+
+export default Button;

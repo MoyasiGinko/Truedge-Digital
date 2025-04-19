@@ -1,311 +1,135 @@
 "use client";
-import { useState } from "react";
-import { Button } from "../utils/Button";
-import { Link } from "../utils/Link";
-import { Card } from "../utils/Card";
-import { useCursorInteraction } from "../utils/useCursorInteraction";
-import { motion } from "framer-motion";
+import { useState, ReactNode } from "react";
+import Button from "../utils/Button";
+import RippleButton from "../utils/RippleButton";
 
 export default function Home() {
-  // Specify the element types for each cursor hook
-  const h1CursorProps = useCursorInteraction<HTMLHeadingElement>({
-    blendMode: "normal",
-  });
-  const pCursorProps = useCursorInteraction<HTMLParagraphElement>({
-    blendMode: "normal",
-  });
-  const h2CursorProps = useCursorInteraction<HTMLHeadingElement>({
-    blendMode: "normal",
-  });
-  const divCursorProps = useCursorInteraction<HTMLDivElement>({
-    blendMode: "difference",
-    fillElement: true,
-  });
+  const [activeColor, setActiveColor] = useState("#3b82f6"); // Default blue
+  const [count, setCount] = useState(0);
 
-  // Add some state for interactive demos
-  const [activeTab, setActiveTab] = useState(1);
-  const [hovered, setHovered] = useState(false);
-
-  // For the tab buttons, don't use the cursor props directly
-  // Define an interface for the mouse event
-  interface TabMouseEvent {
-    currentTarget: HTMLButtonElement;
-  }
-
-  const handleTabMouseEnter = (e: TabMouseEvent): void => {
-    document.documentElement.style.setProperty(
-      "--cursor-blend-mode",
-      "difference"
-    );
-    e.currentTarget.style.background = "rgba(56,189,248,0.2)";
+  const colors = {
+    blue: "#3b82f6",
+    purple: "#8b5cf6",
+    green: "#10b981",
+    pink: "#ec4899",
+    amber: "#f59e0b",
   };
 
-  const handleTabMouseLeave = (e: TabMouseEvent): void => {
-    document.documentElement.style.setProperty("--cursor-blend-mode", "normal");
-    e.currentTarget.style.removeProperty("background");
+  const handleColorChange = (color: string) => {
+    setActiveColor(color);
+  };
+
+  const handleIncrement = () => {
+    setCount((prev) => prev + 1);
   };
 
   return (
-    <main className="container mx-auto px-4 py-12 min-h-screen">
-      <section className="max-w-4xl mx-auto mb-16">
-        <motion.h1
-          className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          ref={h1CursorProps.ref}
-          onMouseEnter={h1CursorProps.onMouseEnter}
-          onMouseLeave={h1CursorProps.onMouseLeave}
-        >
-          Custom Cursor Experience
-        </motion.h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
+      <div className="max-w-md w-full bg-gray-800 bg-opacity-60 backdrop-blur-md rounded-xl shadow-xl p-8 border border-gray-700">
+        <h1 className="text-3xl font-bold text-center mb-6 text-white">
+          Custom Cursor Demo
+        </h1>
 
-        <motion.p
-          className="text-xl mb-8 max-w-2xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          ref={pCursorProps.ref}
-          onMouseEnter={pCursorProps.onMouseEnter}
-          onMouseLeave={pCursorProps.onMouseLeave}
-        >
-          Move your cursor around to see the glassy bubble effect following it.
-          Notice how it reacts differently when hovering over interactive
-          elements.
-        </motion.p>
+        <p className="mb-6 text-gray-300 text-center">
+          The custom cursor follows your mouse and morphs into buttons when
+          hovering them. The default cursor remains visible throughout.
+        </p>
 
-        {/* Buttons have their own cursor handling built into the Button component */}
-        <motion.div
-          className="flex flex-wrap gap-4 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Button variant="primary" size="lg">
-            Primary Button
-          </Button>
-          <Button variant="secondary" size="lg">
-            Secondary Button
-          </Button>
-          <Button variant="outline" size="lg">
-            Outline Button
-          </Button>
-        </motion.div>
+        <Button>Click Me</Button>
 
-        {/* Links have their own cursor handling built into the Link component */}
-        <motion.div
-          className="flex flex-wrap gap-8 mb-12 text-lg"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <Link href="#">Underlined Link</Link>
-          <Link href="#" underline={false}>
-            Plain Link
-          </Link>
-          <Link href="https://nextjs.org" external>
-            External Link
-          </Link>
-        </motion.div>
-      </section>
-
-      {/* Interactive tabs section */}
-      <section className="max-w-4xl mx-auto mb-16 bg-gray-50 dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Cursor Interaction with Tabs
-        </h2>
-
-        <div className="flex border-b border-gray-300 dark:border-gray-700 mb-6">
-          {[1, 2, 3].map((tab) => (
-            <button
-              key={tab}
-              className={`px-6 py-3 font-medium text-lg transition-all ${
-                activeTab === tab
-                  ? "border-b-2 border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-              }`}
-              onClick={() => setActiveTab(tab)}
-              onMouseEnter={handleTabMouseEnter}
-              onMouseLeave={handleTabMouseLeave}
-            >
-              Tab {tab}
-            </button>
-          ))}
-        </div>
-
-        <div className="p-4">
-          {activeTab === 1 && (
-            <div className="space-y-4">
-              <p>
-                This is the content for Tab 1. Notice how the cursor changes
-                when hovering over text.
-              </p>
-              <p>
-                Each interactive element has a different cursor interaction
-                applied to it.
-              </p>
-            </div>
-          )}
-
-          {activeTab === 2 && (
-            <div className="space-y-4">
-              <p>
-                This is the content for Tab 2. The custom cursor follows your
-                mouse with a slight delay.
-              </p>
-              <p>
-                When you click, it creates a subtle ripple effect from the
-                cursor position.
-              </p>
-            </div>
-          )}
-
-          {activeTab === 3 && (
-            <div className="space-y-4">
-              <p>
-                This is the content for Tab 3. The cursor bubble effect changes
-                size based on the context.
-              </p>
-              <p>
-                Try hovering over different types of elements to see how it
-                reacts.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Interactive cards grid */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <Card interactive>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">Interactive Card</h3>
-              <p>
-                This card has the cursor interaction effect. Hover to see how
-                the bubble fills the card.
-              </p>
-              <div className="mt-4">
-                <Button variant="primary" size="sm">
-                  Card Button
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          <Card interactive>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">Hover Effects</h3>
-              <p>
-                The cursor changes when interacting with different elements on
-                the card.
-              </p>
-              <div className="mt-4 flex space-x-2">
-                <Button variant="outline" size="sm">
-                  Details
-                </Button>
-                <Button variant="secondary" size="sm">
-                  View
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <Card>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">Regular Card</h3>
-              <p>
-                This card doesn't have the cursor interaction effect applied to
-                the entire card.
-              </p>
-              <div className="mt-4">
-                <Link href="#">Card Link</Link>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-      </section>
-
-      {/* Circular hover demo */}
-      <section className="max-w-3xl mx-auto mb-16">
-        <h2
-          className="text-2xl font-bold mb-6 text-center"
-          ref={h2CursorProps.ref}
-          onMouseEnter={h2CursorProps.onMouseEnter}
-          onMouseLeave={h2CursorProps.onMouseLeave}
-        >
-          Cursor Hover Demo
-        </h2>
-
-        <div className="flex justify-center">
-          <motion.div
-            className="w-64 h-64 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center cursor-none"
-            animate={{
-              scale: hovered ? 1.1 : 1,
-              boxShadow: hovered
-                ? "0 0 30px rgba(59, 130, 246, 0.6)"
-                : "0 0 0px rgba(59, 130, 246, 0.3)",
-            }}
-            transition={{ duration: 0.4 }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            ref={divCursorProps.ref}
-            onMouseMove={divCursorProps.onMouseEnter}
-          >
-            <p className="text-white font-medium text-center">
-              Hover over me
-              <br />
-              to see the cursor change
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Call to action section */}
-      <section className="max-w-2xl mx-auto text-center mb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-        >
-          <h2 className="text-2xl font-bold mb-4">
-            Try Different Interactions
-          </h2>
-          <p className="mb-6">
-            This glassy bubble cursor creates a modern, immersive experience.
-            Try clicking and hovering over different elements to see all
-            effects.
+        <div className="mb-8 p-4 bg-gray-700 bg-opacity-40 rounded-lg text-center">
+          <p className="text-xl text-gray-200">
+            Count:{" "}
+            <span className="text-2xl font-bold" style={{ color: activeColor }}>
+              {count}
+            </span>
           </p>
+        </div>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg">Large Button</Button>
-            <Button variant="outline" size="lg">
-              Try Me
-            </Button>
+        <div className="mb-8">
+          <h2 className="text-lg font-medium text-gray-300 mb-3 text-center">
+            Cursor Color
+          </h2>
+          <div className="flex justify-center gap-4">
+            {Object.entries(colors).map(([name, value]) => (
+              <button
+                key={name}
+                className="w-10 h-10 rounded-full shadow-lg cursor-btn"
+                style={{
+                  backgroundColor: value,
+                  transform: activeColor === value ? "scale(1.15)" : "scale(1)",
+                  boxShadow:
+                    activeColor === value
+                      ? `0 0 15px ${value}`
+                      : "0 0 5px rgba(0,0,0,0.3)",
+                }}
+                onClick={() => handleColorChange(value)}
+                aria-label={`${name} color`}
+              />
+            ))}
           </div>
-        </motion.div>
-      </section>
+        </div>
 
-      {/* Cursor indicator */}
-      <div className="fixed bottom-4 right-4 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-black/80 backdrop-blur-sm p-2 rounded-md">
-        Custom cursor active
+        <div className="space-y-5">
+          <div className="flex justify-center">
+            <button
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium cursor-btn"
+              onClick={handleIncrement}
+              style={{
+                backgroundImage: `linear-gradient(to right, ${activeColor}, ${activeColor}dd)`,
+              }}
+            >
+              Increment Counter
+            </button>
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              className="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-medium cursor-btn"
+              onClick={handleIncrement}
+            >
+              Secondary Button
+            </button>
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              className="px-6 py-3 bg-transparent border-2 text-gray-200 rounded-lg font-medium cursor-btn"
+              onClick={handleIncrement}
+              style={{
+                borderColor: activeColor,
+                color: `${activeColor}ee`,
+              }}
+            >
+              Outline Button
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <button
+              className="p-3 bg-gray-700 bg-opacity-50 rounded-lg text-gray-300 hover:bg-gray-600 cursor-btn"
+              onClick={handleIncrement}
+            >
+              Button 1
+            </button>
+
+            <button
+              className="p-3 bg-gray-700 bg-opacity-50 rounded-lg text-gray-300 hover:bg-gray-600 cursor-btn"
+              onClick={handleIncrement}
+            >
+              Button 2
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center text-gray-500 text-sm">
+          <p>Try hovering over buttons to see the morphing effect</p>
+          <p>
+            The custom cursor disappears while the default cursor remains
+            visible
+          </p>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
